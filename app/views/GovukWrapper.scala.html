@@ -45,11 +45,18 @@
     @head(
       linkElem = None,
       headScripts = None)
+    <script src='@routes.Assets.versioned("javascripts/gtm.js")'></script>
     <meta name="format-detection" content="telephone=no" />
     <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/registerestatedetailsfrontend-app.css")' />
 }
 
-@headerNavLinks = {}
+@headerNavLinks = {
+    <li>
+        <a id="logOut" href="@controllers.routes.LogoutController.logout" data-target="link - click:@title:@Messages("site.sign_out")">
+        @Messages("site.sign_out")
+        </a>
+    </li>
+}
 
 @insideHeader = {
     @header_nav(
