@@ -39,7 +39,16 @@ site.yes = Yes
 site.continue = Continue
 site.service_name = Register and Maintain an Estate
 site.textarea.char_limit = (Limit is {0} characters)
+site.returnToRegistrationProgress = Return to registration progress
 site.sign_out = Sign out
 
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
+
+estateName.title = What is the estate’s name?
+estateName.heading = What is the estate’s name?
+estateName.hint = This must be 53 characters or fewer
+estateName.checkYourAnswersLabel = What is the estate’s name?
+estateName.error.length = The estate’s name must be 53 characters or less
+estateName.error.invalidCharacters = The estate’s name must only include letters a to z, numbers, ampersands (&), apostrophes, commas, forward slashes, full stops, hyphens, round brackets and spaces
+estateName.error.required = Enter the estate’s name
