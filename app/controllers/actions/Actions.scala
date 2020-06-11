@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,19 +12,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(
-    main_template: MainTemplate
-)
+package controllers.actions
 
-@()(implicit request: Request[_], messages: Messages)
+import com.google.inject.Inject
+import models.requests.{DataRequest, OptionalDataRequest}
+import play.api.mvc.{ActionBuilder, AnyContent}
 
-@main_template(
-    title = messages("session_expired.title")
-    ) {
+class Actions @Inject()(
+                         identify: IdentifierAction,
+                         getData: DataRetrievalAction,
+                         requireData: DataRequiredAction
+                       ) {
 
-    @components.heading("session_expired.heading")
+  def authWithSession: ActionBuilder[OptionalDataRequest, AnyContent] =
+    identify andThen getData
 
-    <p>@messages("session_expired.guidance")</p>
+  def authWithData: ActionBuilder[DataRequest, AnyContent] =
+    authWithSession andThen requireData
 }

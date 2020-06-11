@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,19 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(
-    main_template: MainTemplate
-)
+package connectors
 
-@()(implicit request: Request[_], messages: Messages)
+import config.FrontendAppConfig
+import javax.inject.Inject
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
-@main_template(
-    title = messages("session_expired.title")
-    ) {
+import scala.concurrent.{ExecutionContext, Future}
 
-    @components.heading("session_expired.heading")
+class EstatesStoreConnector @Inject()(http: HttpClient, config : FrontendAppConfig) {
 
-    <p>@messages("session_expired.guidance")</p>
+  private val registerTasksUrl = s"${config.estatesStoreUrl}/register/tasks/estate-details"
+
+  def setTaskComplete()(implicit hc: HeaderCarrier, ec : ExecutionContext): Future[HttpResponse] = {
+    http.POSTEmpty[HttpResponse](registerTasksUrl)
+  }
 }

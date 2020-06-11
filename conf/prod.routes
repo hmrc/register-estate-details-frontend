@@ -1,5 +1,5 @@
 # Add all the application routes to the app.routes file
-->         /register-estate-details-frontend                    app.Routes
+->         /register-an-estate/details                    app.Routes
 ->         /                          health.Routes
 ->     	   /template                  template.Routes
 

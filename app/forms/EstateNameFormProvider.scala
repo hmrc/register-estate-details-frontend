@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,19 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(
-    main_template: MainTemplate
-)
+package forms
 
-@()(implicit request: Request[_], messages: Messages)
+import forms.mappings.Mappings
+import javax.inject.Inject
+import play.api.data.Form
 
-@main_template(
-    title = messages("session_expired.title")
-    ) {
+class EstateNameFormProvider @Inject() extends Mappings {
 
-    @components.heading("session_expired.heading")
-
-    <p>@messages("session_expired.guidance")</p>
+  def apply(): Form[String] =
+    Form(
+      "value" -> text("estateName.error.required")
+        .verifying(
+          firstError(
+            maxLength(53, "estateName.error.length"),
+            regexp("^[A-Za-z0-9 ,.()/&'-]*$", "estateName.error.invalidCharacters"),
+            nonEmptyString("value", "estateName.error.required")
+          ))
+    )
 }
