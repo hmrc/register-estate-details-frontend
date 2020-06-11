@@ -36,8 +36,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class EstateNameController @Inject()(
                                       override val messagesApi: MessagesApi,
                                       val appConfig: FrontendAppConfig,
-                                      sessionRepository: SessionRepository,
-                                      navigator: Navigator,
                                       actions: Actions,
                                       formProvider: EstateNameFormProvider,
                                       connector: EstateConnector,

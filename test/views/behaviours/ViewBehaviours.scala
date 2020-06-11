@@ -16,6 +16,7 @@
 
 package views.behaviours
 
+import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.ViewSpecBase
 
@@ -54,10 +55,10 @@ trait ViewBehaviours extends ViewSpecBase {
           for (key <- expectedGuidanceKeys) assertContainsText(doc, messages(s"$messageKeyPrefix.$key"))
         }
 
-        "display language toggles" in {
+        "not display language toggles" in {
 
           val doc = asDocument(view)
-          assertRenderedById(doc, "cymraeg-switch")
+          assertNotRenderedById(doc, "cymraeg-switch")
         }
       }
     }
@@ -74,4 +75,70 @@ trait ViewBehaviours extends ViewSpecBase {
       }
     }
   }
+
+  def pageWithASubmitButton(view: HtmlFormat.Appendable) = {
+
+    "behave like a page with a submit button" must {
+      "have a submit button" in {
+        val doc = asDocument(view)
+        assertRenderedById(doc, "submit")
+      }
+    }
+  }
+
+  def dynamicTitlePage(view: HtmlFormat.Appendable,
+                       messageKeyPrefix: String,
+                       messageKeyParam: String,
+                       expectedGuidanceKeys: String*): Unit = {
+
+    "behave like a dynamic title page" when {
+
+      "rendered" must {
+
+        "have the correct banner title" in {
+
+          val doc = asDocument(view)
+          val nav = doc.getElementById("proposition-menu")
+          val span = nav.children.first
+          span.text mustBe messages("site.service_name")
+        }
+
+        "display the correct browser title" in {
+
+          val doc = asDocument(view)
+          assertEqualsMessage(doc, "title", s"$messageKeyPrefix.title", messageKeyParam)
+        }
+
+        "display the correct page title" in {
+
+          val doc = asDocument(view)
+          assertPageTitleEqualsMessage(doc, s"$messageKeyPrefix.heading", messageKeyParam)
+        }
+
+        "display the correct guidance" in {
+
+          val doc = asDocument(view)
+          for (key <- expectedGuidanceKeys) assertContainsText(doc, messages(s"$messageKeyPrefix.$key"))
+        }
+
+        "not display language toggles" in {
+
+          val doc = asDocument(view)
+          assertNotRenderedById(doc, "cymraeg-switch")
+        }
+      }
+    }
+  }
+
+  def pageWithHint[A](form: Form[A],
+                      createView: Form[A] => HtmlFormat.Appendable,
+                      expectedHintKey: String): Unit = {
+
+    "behave like a page with hint text" in {
+
+      val doc = asDocument(createView(form))
+      assertContainsHint(doc, "value", Some(messages(expectedHintKey)))
+    }
+  }
+
 }
