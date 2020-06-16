@@ -16,32 +16,46 @@
 
 package controllers
 
+import connectors.EstateConnector
 import controllers.actions.Actions
 import javax.inject.Inject
 import models.{NormalMode, UserAnswers}
+import pages.EstateNamePage
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Success, Try}
 
 class IndexController @Inject()(
                                  val controllerComponents: MessagesControllerComponents,
                                  actions: Actions,
-                                 repository: SessionRepository
+                                 repository: SessionRepository,
+                                 connector: EstateConnector
                                )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = actions.authWithSession.async {
     implicit request =>
-      request.userAnswers match {
-        case Some(_) =>
-          Future.successful(Redirect(controllers.routes.EstateNameController.onPageLoad(NormalMode)))
-        case None =>
-          val userAnswers: UserAnswers = UserAnswers(request.internalId)
-          repository.set(userAnswers).map { _ =>
-            Redirect(controllers.routes.EstateNameController.onPageLoad(NormalMode))
-          }
+
+      val userAnswers = UserAnswers(request.internalId)
+
+      for {
+        name <- connector.getCorrespondenceName()
+        updatedAnswers <- Future.fromTry(populateUserAnswers(name, userAnswers))
+        _ <- repository.set(updatedAnswers)
+      } yield {
+        Redirect(controllers.routes.EstateNameController.onPageLoad(NormalMode))
       }
+  }
+
+  private def populateUserAnswers(estateName: Option[String], userAnswers: UserAnswers): Try[UserAnswers] = {
+    estateName match {
+      case Some(name) =>
+        userAnswers.set(EstateNamePage, name)
+      case _ =>
+        Success(userAnswers)
+    }
   }
 }

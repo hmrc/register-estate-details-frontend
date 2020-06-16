@@ -17,17 +17,33 @@
 package controllers
 
 import base.SpecBase
+import connectors.EstateConnector
 import models.NormalMode
+import org.mockito.Matchers.any
+import org.mockito.Mockito.when
+import play.api.inject.bind
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
+import scala.concurrent.Future
+
 class IndexControllerSpec extends SpecBase {
+
+  val mockEstateConnector: EstateConnector = mock[EstateConnector]
+
+  val name: String = "Estate Name"
 
   "Index Controller" must {
 
     "return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      when(mockEstateConnector.getCorrespondenceName()(any(), any())).thenReturn(Future.successful(Some(name)))
+
+      val application =
+        applicationBuilder(userAnswers = None)
+          .overrides(bind[EstateConnector].toInstance(mockEstateConnector))
+          .build()
 
       val request = FakeRequest(GET, routes.IndexController.onPageLoad().url)
 

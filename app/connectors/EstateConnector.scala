@@ -18,7 +18,8 @@ package connectors
 
 import config.FrontendAppConfig
 import javax.inject.Inject
-import play.api.libs.json.{JsString, JsValue, Json}
+import models.EstateDetails
+import play.api.libs.json.{Format, JsString, JsSuccess, JsValue, Reads, Writes}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
@@ -26,10 +27,19 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EstateConnector @Inject()(http: HttpClient, config : FrontendAppConfig) {
 
-  private def addCorrespondenceNameUrl = s"${config.estatesUrl}/estates/correspondence/name"
+  private val correspondenceNameUrl = s"${config.estatesUrl}/estates/correspondence/name"
 
   def addCorrespondenceName(estateName: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
-    http.POST[JsValue, HttpResponse](addCorrespondenceNameUrl, JsString(estateName))
+    http.POST[JsValue, HttpResponse](correspondenceNameUrl, JsString(estateName))
+  }
+
+  def getCorrespondenceName()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
+    http.GET[JsValue](correspondenceNameUrl) flatMap {
+      _.validate[EstateDetails] match {
+        case JsSuccess(details, _) => Future.successful(Some(details.name))
+        case _ => Future.successful(None)
+      }
+    }
   }
 
 }
