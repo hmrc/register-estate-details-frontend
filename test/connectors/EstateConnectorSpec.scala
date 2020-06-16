@@ -95,5 +95,76 @@ class EstateConnectorSpec extends SpecBase with Generators with WireMockHelper w
       }
 
     }
+
+    "getting correspondence name" must {
+
+      val url: String = "/estates/correspondence/name"
+
+      "Return Some(name) when it is available in the backend" in {
+
+        val json =
+          """
+            |{
+            |   "name": "Test Estate"
+            |}
+            |""".stripMargin
+
+        val application = applicationBuilder()
+          .configure(
+            Seq(
+              "microservice.services.estates.port" -> server.port(),
+              "auditing.enabled" -> false
+            ): _*
+          ).build()
+
+        val connector = application.injector.instanceOf[EstateConnector]
+
+        server.stubFor(
+          get(urlEqualTo(url))
+            .willReturn(okJson(json))
+        )
+
+        val futureValue = connector.getCorrespondenceName()
+
+        whenReady(futureValue) {
+          result =>
+            result mustBe Some("Test Estate")
+        }
+
+        application.stop()
+      }
+
+      "Return None when the name is not available in the backend" in {
+
+        val json =
+          """
+            |{}
+            |""".stripMargin
+
+        val application = applicationBuilder()
+          .configure(
+            Seq(
+              "microservice.services.estates.port" -> server.port(),
+              "auditing.enabled" -> false
+            ): _*
+          ).build()
+
+        val connector = application.injector.instanceOf[EstateConnector]
+
+        server.stubFor(
+          get(urlEqualTo(url))
+            .willReturn(okJson(json))
+        )
+
+        val futureValue = connector.getCorrespondenceName()
+
+        whenReady(futureValue) {
+          result =>
+            result mustBe None
+        }
+
+        application.stop()
+      }
+    }
   }
 }
