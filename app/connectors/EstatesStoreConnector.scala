@@ -18,12 +18,16 @@ package connectors
 
 import config.FrontendAppConfig
 import javax.inject.Inject
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.HttpReads.Implicits
+import uk.gov.hmrc.http.HttpReads.Implicits.{readEitherOf, throwOnFailure}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class EstatesStoreConnector @Inject()(http: HttpClient, config : FrontendAppConfig) {
+
+  implicit def httpResponse: HttpReads[HttpResponse] = throwOnFailure(readEitherOf[HttpResponse](Implicits.readRaw))
 
   private val registerTasksUrl = s"${config.estatesStoreUrl}/register/tasks/estate-details"
 
