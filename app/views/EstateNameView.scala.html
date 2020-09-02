@@ -26,7 +26,7 @@
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = s"${errorPrefix(form)} ${messages("estateName.title")}"
+    title = s"${errorPrefix(form)}${messages("estateName.title")}"
 ) {
 
     @formHelper(action = EstateNameController.onSubmit(mode), 'autoComplete -> "on") {
