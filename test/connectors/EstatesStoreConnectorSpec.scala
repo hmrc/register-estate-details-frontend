@@ -20,7 +20,7 @@ import base.SpecBase
 import com.github.tomakehurst.wiremock.client.WireMock.{okJson, urlEqualTo, _}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import utils.WireMockHelper
 
 import scala.concurrent.ExecutionContext.Implicits.global

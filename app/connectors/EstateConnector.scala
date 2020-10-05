@@ -19,7 +19,8 @@ package connectors
 import config.FrontendAppConfig
 import javax.inject.Inject
 import models.EstateDetails
-import play.api.libs.json.{Format, JsString, JsSuccess, JsValue, Reads, Writes}
+import play.api.libs.json.{JsString, JsSuccess, JsValue}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
