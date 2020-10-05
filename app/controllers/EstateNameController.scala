@@ -22,12 +22,10 @@ import controllers.actions.Actions
 import forms.EstateNameFormProvider
 import javax.inject.Inject
 import models.Mode
-import navigation.Navigator
 import pages.EstateNamePage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.EstateNameView
 

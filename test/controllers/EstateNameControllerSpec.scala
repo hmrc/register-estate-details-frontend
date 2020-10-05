@@ -20,16 +20,13 @@ import base.SpecBase
 import connectors.{EstateConnector, EstatesStoreConnector}
 import forms.EstateNameFormProvider
 import models.NormalMode
-import navigation.{FakeNavigator, Navigator}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import pages.EstateNamePage
 import play.api.inject.bind
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repositories.SessionRepository
 import uk.gov.hmrc.http.HttpResponse
 import views.html.EstateNameView
 
@@ -96,8 +93,8 @@ class EstateNameControllerSpec extends SpecBase with MockitoSugar {
           .overrides(bind[EstatesStoreConnector].toInstance(mockEstatesStoreConnector))
           .build()
 
-      when(mockEstateConnector.addCorrespondenceName(any())(any(), any())).thenReturn(Future.successful(HttpResponse(OK)))
-      when(mockEstatesStoreConnector.setTaskComplete()(any(), any())).thenReturn(Future.successful(HttpResponse(OK)))
+      when(mockEstateConnector.addCorrespondenceName(any())(any(), any())).thenReturn(Future.successful(HttpResponse(OK, "")))
+      when(mockEstatesStoreConnector.setTaskComplete()(any(), any())).thenReturn(Future.successful(HttpResponse(OK, "")))
 
       val request = FakeRequest(POST, submitDetailsRoute).withFormUrlEncodedBody(("value", name))
 
