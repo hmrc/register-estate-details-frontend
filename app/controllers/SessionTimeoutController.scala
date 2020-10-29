@@ -19,9 +19,10 @@ package controllers
 import config.FrontendAppConfig
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import play.api.{Configuration, Environment}
+import play.api.{Configuration, Environment, Logger}
 import uk.gov.hmrc.play.bootstrap.config.AuthRedirects
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.Session
 
 import scala.concurrent.Future
 
@@ -31,12 +32,15 @@ class SessionTimeoutController @Inject()(val appConfig: FrontendAppConfig,
                                          val env: Environment,
                                          mcc: MessagesControllerComponents) extends FrontendController(mcc) with AuthRedirects {
 
+  private val logger = Logger(getClass)
 
   val keepAlive: Action[AnyContent] = Action.async { implicit request =>
+    logger.info(s"[Session ID: ${Session.id(hc)}] user has requested to extend their session")
     Future.successful(Ok.withSession(request.session))
   }
 
-  val timeout: Action[AnyContent] = Action.async {
+  val timeout: Action[AnyContent] = Action.async { implicit request =>
+    logger.info(s"[Session ID: ${Session.id(hc)}] user has not requested to extend their session, user has been signed out")
     Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad().url).withNewSession)
   }
 

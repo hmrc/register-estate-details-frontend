@@ -19,17 +19,26 @@ package controllers.actions
 import controllers.routes
 import javax.inject.Inject
 import models.requests.{DataRequest, OptionalDataRequest}
+import play.api.Logger
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionRefiner, Result}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.HeaderCarrierConverter
+import utils.Session
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class DataRequiredActionImpl @Inject()(implicit val executionContext: ExecutionContext) extends DataRequiredAction {
 
+  private val logger = Logger(getClass)
+
   override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = {
+
+    implicit val hc : HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
     request.userAnswers match {
       case None =>
+        logger.info(s"[Session ID: ${Session.id(hc)}] user answers required, none in user answers, signing user out")
         Future.successful(Left(Redirect(routes.SessionExpiredController.onPageLoad())))
       case Some(data) =>
         Future.successful(Right(DataRequest(request.request, request.internalId, data)))
