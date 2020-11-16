@@ -21,7 +21,7 @@ import javax.inject.Inject
 import uk.gov.hmrc.http.HttpReads.Implicits
 import uk.gov.hmrc.http.HttpReads.Implicits.{readEitherOf, throwOnFailure}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
