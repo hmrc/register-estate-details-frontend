@@ -40,9 +40,9 @@ class EstateConnectorSpec extends SpecBase with Generators with WireMockHelper w
 
   "estate connector" when {
 
-    "add correspondence name" must {
+    val url: String = "/estates/correspondence/name"
 
-      def addCorrespndenceNameUrl = "/estates/correspondence/name"
+    "add correspondence name" must {
 
       val name = "Name"
 
@@ -59,7 +59,7 @@ class EstateConnectorSpec extends SpecBase with Generators with WireMockHelper w
         val connector = application.injector.instanceOf[EstateConnector]
 
         server.stubFor(
-          post(urlEqualTo(addCorrespndenceNameUrl))
+          post(urlEqualTo(url))
             .willReturn(ok)
         )
 
@@ -83,7 +83,7 @@ class EstateConnectorSpec extends SpecBase with Generators with WireMockHelper w
         val connector = application.injector.instanceOf[EstateConnector]
 
         server.stubFor(
-          post(urlEqualTo(addCorrespndenceNameUrl))
+          post(urlEqualTo(url))
             .willReturn(badRequest)
         )
 
@@ -97,8 +97,6 @@ class EstateConnectorSpec extends SpecBase with Generators with WireMockHelper w
     }
 
     "getting correspondence name" must {
-
-      val url: String = "/estates/correspondence/name"
 
       "Return Some(name) when it is available in the backend" in {
 
