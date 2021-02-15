@@ -87,6 +87,16 @@ trait ViewBehaviours extends ViewSpecBase {
     }
   }
 
+  def pageWithoutLogoutButton(view: HtmlFormat.Appendable) = {
+
+    "behave like a page without a logout button" must {
+      "not have a logout button" in {
+        val doc = asDocument(view)
+        assertNotRenderedById(doc, "logOut")
+      }
+    }
+  }
+
   def dynamicTitlePage(view: HtmlFormat.Appendable,
                        messageKeyPrefix: String,
                        messageKeyParam: String,
