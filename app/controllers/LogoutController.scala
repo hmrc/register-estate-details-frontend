@@ -18,19 +18,49 @@ package controllers
 
 import com.google.inject.{Inject, Singleton}
 import config.FrontendAppConfig
+import controllers.actions.IdentifierAction
+import play.api.Logger.logger
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import utils.Session
+
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class LogoutController @Inject()(
                                   appConfig: FrontendAppConfig,
-                                  val controllerComponents: MessagesControllerComponents
-                                ) extends FrontendBaseController with Logging {
+                                  val controllerComponents: MessagesControllerComponents,
+                                  identify: IdentifierAction,
+                                  auditConnector: AuditConnector
+                                )(implicit val ec: ExecutionContext) extends FrontendBaseController {
 
-  def logout: Action[AnyContent] = Action { implicit request =>
-    logger.info(s"[Session ID: ${Session.id(hc)}] user has signed out of the service")
-    Redirect(appConfig.logoutUrl).withNewSession
+  def logout: Action[AnyContent] = identify { request =>
+
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+
+    logger.info(s"[Session ID: ${utils.Session.id(hc)}] user signed out from the service, asking for feedback")
+
+    if(appConfig.logoutAudit) {
+
+      val auditData = Map(
+        "sessionId" -> Session.id(hc),
+        "event" -> "signout",
+        "service" -> "register-estate-details-frontend",
+        "userGroup" -> request.affinityGroup.toString
+      )
+
+      auditConnector.sendExplicitAudit(
+        "estates",
+        auditData
+      )
+
+    }
+
+    Redirect(appConfig.logoutUrl).withSession(session = ("feedbackId", Session.id(hc)))
+
   }
 }

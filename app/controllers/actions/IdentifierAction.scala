@@ -44,7 +44,7 @@ class AuthenticatedIdentifierAction @Inject()(
 
     authorised().retrieve(Retrievals.internalId) {
       _.map {
-        internalId => block(IdentifierRequest(request, internalId))
+        internalId => block(IdentifierRequest(request, internalId, AffinityGroup.Organisation))
       }.getOrElse(throw new UnauthorizedException("Unable to retrieve internal Id"))
     } recover {
       case _: NoActiveSession =>
@@ -67,7 +67,7 @@ class SessionIdentifierAction @Inject()(
 
     hc.sessionId match {
       case Some(session) =>
-        block(IdentifierRequest(request, session.value))
+        block(IdentifierRequest(request, session.value, AffinityGroup.Organisation))
       case None =>
         Future.successful(Redirect(routes.SessionExpiredController.onPageLoad()))
     }
