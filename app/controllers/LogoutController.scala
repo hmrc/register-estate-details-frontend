@@ -20,7 +20,6 @@ import com.google.inject.{Inject, Singleton}
 import config.FrontendAppConfig
 import controllers.actions.IdentifierAction
 import play.api.Logger.logger
-import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector

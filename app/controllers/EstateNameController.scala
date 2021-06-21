@@ -42,7 +42,7 @@ class EstateNameController @Inject()(
                                       view: EstateNameView
                                     )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  val form = formProvider()
+  private val form: Form[String] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = actions.authWithData {
     implicit request =>
