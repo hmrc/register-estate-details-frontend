@@ -1,7 +1,3 @@
-checkYourAnswers.title = Gwirio’ch Atebion
-checkYourAnswers.heading = Gwirio’ch Atebion
-checkYourAnswers.guidance = Arweiniad ar gyfer gwirio’ch atebion
-
 date.day = Diwrnod
 date.month = Mis
 date.year = Blwyddyn
