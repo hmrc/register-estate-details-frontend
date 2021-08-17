@@ -16,36 +16,39 @@
 
 @import controllers.routes._
 @import config.FrontendAppConfig
+@import views.html.components.{Heading, InputText, ErrorSummary, SubmitButton}
 
 @this(
-        main_template: MainTemplate,
+        mainTemplate: MainTemplate,
         formHelper: FormWithCSRF,
+        inputText: InputText,
+        errorSummary: ErrorSummary,
+        submitButton: SubmitButton,
         appConfig: FrontendAppConfig
 )
 
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = s"${errorPrefix(form)}${messages("estateName.title")}"
+@mainTemplate(
+    title = s"${errorPrefix(form)}${messages("estateName.title")}",
+    showBackLink = true
 ) {
 
     @formHelper(action = EstateNameController.onSubmit(mode), 'autoComplete -> "on") {
 
-        @components.back_link()
+        @errorSummary(form.errors)
 
-        @components.error_summary(form.errors)
-
-        @components.input_text(
+        @inputText(
             field = form("value"),
             label = messages("estateName.heading"),
-            headingIsLabel = true,
-            labelClass=Some("heading-large"),
-            inputClass = Some("form-control-3-4"),
+            labelAsHeading = true,
+            labelClass = Some("govuk-label--l"),
+            inputClass = Some("govuk-!-width-three-quarters"),
             hint = Some(messages("estateName.hint")),
             autocomplete = Some("name")
         )
 
-        @components.submit_button()
+        @submitButton()
 
         <p><a href="@appConfig.registerEstateHubOverview">@messages("site.returnToRegistrationProgress")</a></p>
     }
