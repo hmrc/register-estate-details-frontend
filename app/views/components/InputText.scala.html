@@ -29,7 +29,6 @@
     hint: Option[String] = None,
     prefix: Option[String] = None,
     suffix: Option[String] = None,
-    inputType: Option[String] = None,
     autocomplete: Option[String] = None,
     inputMode: Option[String] = None
 )(implicit messages: Messages)
@@ -41,7 +40,6 @@
             classes = if(labelClass.isDefined) labelClass.get else "",
             content = Text(label)
         ),
-        inputType = inputType.getOrElse(""),
         autocomplete = autocomplete,
         hint = hint.map(hint => Hint(content = Text(hint))),
         errorMessage = field.error match {
