@@ -6,6 +6,40 @@ import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 lazy val appName: String = "register-estate-details-frontend"
 
+val excludedPackages = Seq(
+  "<empty>",
+  ".*Reverse.*",
+  ".*Routes.*",
+  ".*standardError*.*",
+  ".*main_template*.*",
+  "uk.gov.hmrc.BuildInfo",
+  "app.*",
+  "prod.*",
+  ".*testOnlyDoNotUseInAppConf.*",
+  "views.html.*",
+  "testOnly.*",
+  "com.kenshoo.play.metrics*.*",
+  ".*repositories.*",
+  ".*LanguageSwitchController",
+  ".*GuiceInjector",
+  ".*models.Mode",
+  ".*filters.*",
+  ".*handlers.*",
+  ".*components.*",
+  ".*FrontendAuditConnector.*",
+  ".*javascript.*",
+  ".*ControllerConfiguration",
+  ".*mapping.Constants.*",
+  ".*pages.*",
+  ".*viewmodels.*",
+  ".*Message.*",
+  ".*config.*",
+  ".*RichJsObject.*",
+  ".*RichJsValue.*",
+  ".*DateErrorFormatter.*",
+  ".*views.html.*"
+)
+
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
@@ -30,10 +64,8 @@ lazy val root = (project in file("."))
       "controllers.routes._"
     ),
     PlayKeys.playDefaultPort := 8823,
-    ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*filters.*;.*handlers.*;.*components.*;.*repositories.*;" +
-      ".*BuildInfo.*;.*javascript.*;.*FrontendAuditConnector.*;.*Routes.*;.*GuiceInjector;" +
-      ".*ControllerConfiguration;.*LanguageSwitchController",
-    ScoverageKeys.coverageMinimum := 70,
+    ScoverageKeys.coverageExcludedFiles := excludedPackages.mkString(";"),
+    ScoverageKeys.coverageMinimum := 80,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true,
     scalacOptions ++= Seq("-feature"),
@@ -51,8 +83,7 @@ lazy val root = (project in file("."))
           "javascripts/registerestatedetailsfrontend.js",
           "javascripts/autocomplete.js",
           "javascripts/iebacklink.js",
-          "javascripts/print.js",
-          "javascripts/autocomplete/location-autocomplete.min.js"
+          "javascripts/print.js"
         ))
     ),
     // prevent removal of unused code which generates warning errors due to use of third-party libs

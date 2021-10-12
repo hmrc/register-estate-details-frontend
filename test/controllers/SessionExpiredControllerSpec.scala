@@ -42,5 +42,20 @@ class SessionExpiredControllerSpec extends SpecBase {
 
       application.stop()
     }
+
+    "redirect onSubmit" in {
+
+      val application = applicationBuilder(userAnswers = None).build()
+
+      val request = FakeRequest(POST, routes.SessionExpiredController.onSubmit().url)
+
+      val result = route(application, request).value
+
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result).value mustBe "http://localhost:9949/auth-login-stub/gg-sign-in"
+
+      application.stop()
+    }
   }
 }
