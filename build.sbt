@@ -43,6 +43,8 @@ val excludedPackages = Seq(
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
+  .configs(IntegrationTest)
+  .settings(inConfig(IntegrationTest)(itSettings): _*)
   .settings(
     DefaultBuildSettings.scalaSettings,
     DefaultBuildSettings.defaultSettings(),
@@ -99,6 +101,21 @@ lazy val testSettings: Seq[Def.Setting[_]] = Seq(
   fork        := true,
   javaOptions ++= Seq(
     "-Dconfig.resource=test.application.conf"
+  )
+)
+
+lazy val itSettings = Defaults.itSettings ++ Seq(
+  unmanagedSourceDirectories := Seq(
+    baseDirectory.value / "it",
+    baseDirectory.value / "test" / "generators"
+  ),
+  unmanagedResourceDirectories := Seq(
+    baseDirectory.value / "it" / "resources"
+  ),
+  parallelExecution := false,
+  fork := true,
+  javaOptions ++= Seq(
+    "-Dconfig.resource=it.application.conf"
   )
 )
 
