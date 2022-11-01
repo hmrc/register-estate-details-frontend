@@ -44,17 +44,15 @@ class DefaultSessionRepository @Inject()(val mongo: MongoComponent, val config: 
   )
     with SessionRepository {
 
-  private def byId(id: String) = Filters.equal("_id", id)
-
   override def get(id: String): Future[Option[UserAnswers]] =
-  collection.find(byId(id)).headOption
+  collection.find(Filters.equal("_id", id)).headOption
 
   override def set(userAnswers: UserAnswers): Future[Boolean] = {
 
     val updatedAnswers = userAnswers copy (lastUpdated = LocalDateTime.now)
     val options = ReplaceOptions().upsert(true)
 
-    collection.replaceOne(filter = byId(updatedAnswers.id), replacement = updatedAnswers, options = options).toFuture.map(_.wasAcknowledged())
+    collection.replaceOne(filter = Filters.equal("_id", updatedAnswers.id), replacement = updatedAnswers, options = options).toFuture.map(_.wasAcknowledged())
   }
 
 }
