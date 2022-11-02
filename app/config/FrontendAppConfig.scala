@@ -51,6 +51,9 @@ class FrontendAppConfig @Inject() (configuration: Configuration,
   lazy val languageTranslationEnabled: Boolean =
     configuration.get[Boolean]("microservice.services.features.welsh-translation")
 
+  lazy val cacheTtl: Long =  configuration.get[Long]("mongodb.timeToLiveInSeconds")
+  val dropIndexes: Boolean = configuration.getOptional[Boolean]("microservice.services.features.mongo.dropIndexes").getOrElse(false)
+
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
     "cymraeg" -> Lang("cy")

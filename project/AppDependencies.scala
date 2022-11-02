@@ -5,10 +5,10 @@ object AppDependencies {
 
   val compile = Seq(
     play.sbt.PlayImport.ws,
-    "org.reactivemongo" %% "play2-reactivemongo"            % "0.20.13-play28",
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-28"             % "0.73.0",
     "uk.gov.hmrc"       %% "play-frontend-hmrc"             % "1.1.0-play-28",
     "uk.gov.hmrc"       %% "play-conditional-form-mapping"  % "1.9.0-play-28",
-    "uk.gov.hmrc"       %% "bootstrap-frontend-play-28"     % "5.24.0"
+    "uk.gov.hmrc"       %% "bootstrap-frontend-play-28"     % "7.8.0"
   )
 
   val test: Seq[ModuleID] = Seq(
@@ -24,8 +24,9 @@ object AppDependencies {
     "org.scalatestplus"           %% "scalatestplus-scalacheck"   % "3.1.0.0-RC2",
     "com.github.tomakehurst"      % "wiremock-standalone"         % "2.27.2",
     "wolfendale"                  %% "scalacheck-gen-regexp"      % "0.1.2",
-    "com.vladsch.flexmark"        % "flexmark-all"                % "0.62.2"
-  ).map(_ % Test)
+    "com.vladsch.flexmark"        % "flexmark-all"                % "0.62.2",
+    "uk.gov.hmrc.mongo"           %% "hmrc-mongo-test-play-28"    % "0.73.0"
+  ).map(_ % "test, it")
 
   def apply(): Seq[ModuleID] = compile ++ test
 
