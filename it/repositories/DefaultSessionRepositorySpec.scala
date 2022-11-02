@@ -34,7 +34,7 @@ class DefaultSessionRepositorySpec
 
   ".set" - {
 
-    "must set the last updated time on the supplied user answers to `now`, and save them" in {
+    "must set the data on the supplied user answers, and save them" in {
 
       val expectedResult = userAnswers copy (lastUpdated = LocalDateTime.now())
 
@@ -42,7 +42,8 @@ class DefaultSessionRepositorySpec
       val updatedRecord = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
 
       setResult mustEqual true
-      updatedRecord mustEqual expectedResult
+      updatedRecord.id mustEqual expectedResult.id
+      updatedRecord.data mustEqual expectedResult.data
     }
   }
 
