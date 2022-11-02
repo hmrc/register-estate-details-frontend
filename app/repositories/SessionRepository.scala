@@ -16,10 +16,10 @@
 
 package repositories
 
+import config.FrontendAppConfig
 import models.UserAnswers
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, ReplaceOptions}
-import play.api.Configuration
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
@@ -28,24 +28,25 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DefaultSessionRepository @Inject()(val mongo: MongoComponent, val config: Configuration)(implicit val ec: ExecutionContext
+class DefaultSessionRepository @Inject()(val mongo: MongoComponent, val appConfig: FrontendAppConfig)(implicit val ec: ExecutionContext
 ) extends PlayMongoRepository[UserAnswers](
-    collectionName = "user-answers",
-    mongoComponent = mongo,
-    domainFormat = UserAnswers.userAnswersFormat,
-    indexes = Seq(
-      IndexModel(
-        ascending("lastUpdated"),
-        indexOptions = IndexOptions()
-          .name("user-answers-last-updated-index")
-          .expireAfter(config.get[Int]("mongodb.timeToLiveInSeconds"), TimeUnit.SECONDS)
-      )
+  collectionName = "user-answers",
+  mongoComponent = mongo,
+  domainFormat = UserAnswers.userAnswersFormat,
+  indexes = Seq(
+    IndexModel(
+      ascending("lastUpdated"),
+      indexOptions = IndexOptions()
+        .name("user-answers-last-updated-index")
+        .expireAfter(appConfig.cacheTtl, TimeUnit.SECONDS)
     )
-  )
-    with SessionRepository {
+  ),
+  replaceIndexes = appConfig.dropIndexes
+)
+  with SessionRepository {
 
   override def get(id: String): Future[Option[UserAnswers]] =
-  collection.find(Filters.equal("_id", id)).headOption
+    collection.find(Filters.equal("_id", id)).headOption
 
   override def set(userAnswers: UserAnswers): Future[Boolean] = {
 
