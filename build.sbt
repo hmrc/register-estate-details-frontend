@@ -73,11 +73,6 @@ lazy val root = (project in file("."))
     scalacOptions ++= Seq("-feature"),
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
-    update / evictionWarningOptions :=
-      EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
-    resolvers ++= Seq(
-      Resolver.jcenterRepo
-    ),
     // concatenate js
     Concat.groups := Seq(
       "javascripts/registerestatedetailsfrontend-app.js" ->
@@ -119,4 +114,4 @@ lazy val itSettings = Defaults.itSettings ++ Seq(
   )
 )
 
-dependencyOverrides ++= AppDependencies.overrides
+addCommandAlias("scalastyleAll", "all scalastyle test:scalastyle it:scalastyle")

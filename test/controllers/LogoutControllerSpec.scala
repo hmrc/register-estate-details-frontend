@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,9 @@
 package controllers
 
 import base.SpecBase
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify}
 import org.scalatestplus.mockito.MockitoSugar
-import org.mockito.Matchers.{eq => eqTo, _}
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
