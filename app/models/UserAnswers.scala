@@ -17,17 +17,17 @@
 package models
 
 import java.time.LocalDateTime
-
 import pages._
 import play.api.libs.json._
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
+import java.time.temporal.ChronoUnit
 import scala.util.{Failure, Success, Try}
 
 final case class UserAnswers(
                               id: String,
                               data: JsObject = Json.obj(),
-                              lastUpdated: LocalDateTime = LocalDateTime.now
+                              lastUpdated: LocalDateTime = LocalDateTime.now.truncatedTo(ChronoUnit.MILLIS)
                             ) {
 
   def get[A](page: QuestionPage[A])(implicit rds: Reads[A]): Option[A] =
