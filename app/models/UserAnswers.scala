@@ -16,18 +16,16 @@
 
 package models
 
-import java.time.LocalDateTime
 import pages._
 import play.api.libs.json._
-import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
-import java.time.temporal.ChronoUnit
+import java.time.Instant
 import scala.util.{Failure, Success, Try}
 
 final case class UserAnswers(
                               id: String,
                               data: JsObject = Json.obj(),
-                              lastUpdated: LocalDateTime = LocalDateTime.now.truncatedTo(ChronoUnit.MILLIS)
+                              lastUpdated: Instant = Instant.now()
                             ) {
 
   def get[A](page: QuestionPage[A])(implicit rds: Reads[A]): Option[A] =
@@ -67,8 +65,6 @@ final case class UserAnswers(
 }
 
 object UserAnswers {
-
-  import MongoJavatimeFormats.Implicits._
   implicit lazy val reads: Reads[UserAnswers] = {
 
     import play.api.libs.functional.syntax._
@@ -76,7 +72,7 @@ object UserAnswers {
     (
       (__ \ "_id").read[String] and
       (__ \ "data").read[JsObject] and
-      (__ \ "lastUpdated").read[LocalDateTime]
+      (__ \ "lastUpdated").read[Instant]
     ) (UserAnswers.apply _)
   }
 
@@ -87,7 +83,7 @@ object UserAnswers {
     (
       (__ \ "_id").write[String] and
       (__ \ "data").write[JsObject] and
-      (__ \ "lastUpdated").write[LocalDateTime]
+      (__ \ "lastUpdated").write[Instant]
     ) (unlift(UserAnswers.unapply))
   }
 

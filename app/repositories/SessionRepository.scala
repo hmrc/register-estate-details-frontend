@@ -24,7 +24,7 @@ import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, ReplaceOption
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -48,14 +48,14 @@ class DefaultSessionRepository @Inject()(val mongo: MongoComponent, val appConfi
   with SessionRepository {
 
   override def get(id: String): Future[Option[UserAnswers]] =
-    collection.find(Filters.equal("_id", id)).headOption
+    collection.find(Filters.equal("_id", id)).headOption()
 
   override def set(userAnswers: UserAnswers): Future[Boolean] = {
 
-    val updatedAnswers = userAnswers copy (lastUpdated = LocalDateTime.now)
+    val updatedAnswers = userAnswers copy (lastUpdated = Instant.now())
     val options = ReplaceOptions().upsert(true)
 
-    collection.replaceOne(filter = Filters.equal("_id", updatedAnswers.id), replacement = updatedAnswers, options = options).toFuture.map(_.wasAcknowledged())
+    collection.replaceOne(filter = Filters.equal("_id", updatedAnswers.id), replacement = updatedAnswers, options = options).toFuture().map(_.wasAcknowledged())
   }
 
 }

@@ -34,7 +34,7 @@
     showBackLink = true
 ) {
 
-    @formHelper(action = EstateNameController.onSubmit(mode), 'autoComplete -> "on") {
+    @formHelper(action = EstateNameController.onSubmit(mode), Symbol("autoComplete") -> "on") {
 
         @errorSummary(form.errors)
 
