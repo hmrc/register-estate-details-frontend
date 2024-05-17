@@ -3,14 +3,19 @@ import sbt.Def
 import scoverage.ScoverageKeys
 import uk.gov.hmrc.DefaultBuildSettings
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
+import uk.gov.hmrc.DefaultBuildSettings.itSettings
+
 
 lazy val appName: String = "register-estate-details-frontend"
 
-lazy val root = (project in file("."))
+ThisBuild / scalaVersion := "2.13.13"
+ThisBuild / majorVersion := 0
+
+lazy val microservice = (project in file("."))
   .enablePlugins(PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
-  .configs(IntegrationTest)
-  .settings(inConfig(IntegrationTest)(itSettings))
+//  .configs(IntegrationTest)
+//  .settings(inConfig(IntegrationTest)(itSettings))
   .settings(inConfig(Test)(testSettings))
   .settings(
     DefaultBuildSettings.scalaSettings,
@@ -64,6 +69,13 @@ lazy val root = (project in file("."))
   // Try to remove when sbt[ 1.8.0+ and scoverage is 2.0.7+
   .settings(libraryDependencySchemes ++= Seq("org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always))
 
+
+lazy val it = project.in(file("it"))
+  .enablePlugins(PlayScala)
+  .dependsOn(microservice % "test->test")
+  .settings(itSettings())
+
+
 lazy val testSettings: Seq[Def.Setting[_]] = Seq(
   fork        := true,
   javaOptions ++= Seq(
@@ -71,19 +83,19 @@ lazy val testSettings: Seq[Def.Setting[_]] = Seq(
   )
 )
 
-lazy val itSettings = DefaultBuildSettings.integrationTestSettings() ++ Seq(
-  unmanagedSourceDirectories := Seq(
-    baseDirectory.value / "it",
-    baseDirectory.value / "test" / "generators"
-  ),
-  unmanagedResourceDirectories := Seq(
-    baseDirectory.value / "it" / "resources"
-  ),
-  parallelExecution := false,
-  fork := true,
-  javaOptions ++= Seq(
-    "-Dconfig.resource=it.application.conf"
-  )
-)
+//lazy val itSettings = DefaultBuildSettings.integrationTestSettings() ++ Seq(
+//  unmanagedSourceDirectories := Seq(
+//    baseDirectory.value / "it",
+//    baseDirectory.value / "test" / "generators"
+//  ),
+//  unmanagedResourceDirectories := Seq(
+//    baseDirectory.value / "it" / "resources"
+//  ),
+//  parallelExecution := false,
+//  fork := true,
+//  javaOptions ++= Seq(
+//    "-Dconfig.resource=it.application.conf"
+//  )
+//)
 
-addCommandAlias("scalastyleAll", "all scalastyle Test/scalastyle IntegrationTest/scalastyle")
+addCommandAlias("scalastyleAll", "all scalastyle Test/scalastyle it/Test/scalastyle")

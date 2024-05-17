@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package repositories
+package test.repositories
 
 import config.FrontendAppConfig
 import models.UserAnswers
@@ -26,6 +26,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfterEach, OptionValues}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.{JsObject, Json}
+import repositories.DefaultSessionRepository
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
