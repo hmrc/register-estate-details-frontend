@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,9 +111,9 @@ class MessagesSpec extends SpecBase {
 
   private def isInteger(s: String): Boolean = s forall Character.isDigit
 
-  private def toArgArray(msg: String) = msg.split("\\{|\\}").map(_.trim()).filter(isInteger(_))
+  private def toArgArray(msg: String) = msg.split("\\{|\\}").map(_.trim()).filter(isInteger)
 
-  private def countArgs(msg: String) = toArgArray(msg).size
+  private def countArgs(msg: String) = toArgArray(msg).length
 
   private def listArgs(msg: String) = toArgArray(msg).mkString
 
