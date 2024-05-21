@@ -48,6 +48,8 @@ trait SpecBase extends PlaySpec with GuiceOneAppPerSuite with Mocked with TryVal
 
   val defaultAppConfig = Seq(
     "play.filters.disabled" -> List("play.filters.csrf.CSRFFilter", "play.filters.csp.CSPFilter"),
+    "auditing.enabled" -> false,
+    "metrics.enabled" -> false
   )
 
   protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =

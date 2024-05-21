@@ -1,7 +1,5 @@
 import play.sbt.routes.RoutesKeys
 import scoverage.ScoverageKeys
-import uk.gov.hmrc.DefaultBuildSettings
-import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 import uk.gov.hmrc.DefaultBuildSettings.itSettings
 
 
@@ -14,10 +12,6 @@ lazy val microservice = (project in file("."))
   .enablePlugins(PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
   .settings(
-    DefaultBuildSettings.scalaSettings,
-    DefaultBuildSettings.defaultSettings(),
-    majorVersion := 0,
-    scalaVersion := "2.13.12",
     name := appName,
     RoutesKeys.routesImport += "models._",
     TwirlKeys.templateImports ++= Seq(
