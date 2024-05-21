@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,9 +108,10 @@ trait ViewSpecBase extends SpecBase {
     val radio = doc.getElementById(id)
     assert(radio.attr("name") == name, s"\n\nElement $id does not have name $name")
     assert(radio.attr("value") == value, s"\n\nElement $id does not have value $value")
-    isChecked match {
-      case true => assert(radio.hasAttr("checked"), s"\n\nElement $id is not checked")
-      case _ => assert(!radio.hasAttr("checked"), s"\n\nElement $id is checked")
+    if (isChecked) {
+      assert(radio.hasAttr("checked"), s"\n\nElement $id is not checked")
+    } else {
+      assert(!radio.hasAttr("checked"), s"\n\nElement $id is checked")
     }
   }
 }
