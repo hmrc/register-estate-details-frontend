@@ -53,6 +53,11 @@ class MappingsSpec extends AnyWordSpec with Matchers with OptionValues with Mapp
       result.get mustEqual "foobar"
     }
 
+    "bind a valid string by replacing smart apostrophes" in {
+      val result = testForm.bind(Map("value" -> "Passing smart apostrophe for name Alister’s"))
+      result.get mustEqual "Passing smart apostrophe for name Alister's"
+    }
+
     "not bind an empty string" in {
       val result = testForm.bind(Map("value" -> ""))
       result.errors must contain(FormError("value", "error.required"))
