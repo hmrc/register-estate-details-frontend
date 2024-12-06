@@ -43,17 +43,18 @@
 
         @errorSummary(form.errors)
 
-
         @heading(messages("estateName.heading"))
 
         @hmrcCharacterCount(
             CharacterCount(
                 id = form("value").id,
                 name = form("value").name,
+                rows = 1,
                 maxLength = Some(53),
+                classes = "estate-name-textarea",
                 label = Label(Some(messages("estateName.heading"))),
                 value = form("value").value,
-                hint = Some(Hint(Some(messages("estateName.hint")))),
+                hint = Some(Hint(content = HtmlContent(messages("estateName.hint")))),
                 errorMessage = form("value").error.map(error => ErrorMessage(content = Text(error.format)))
             )
         )
