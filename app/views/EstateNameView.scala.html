@@ -16,15 +16,18 @@
 
 @import controllers.routes._
 @import config.FrontendAppConfig
-@import views.html.components.{Heading, InputText, ErrorSummary, SubmitButton}
+@import views.html.components.{Heading, ErrorSummary, SubmitButton}
+
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.charactercount.CharacterCount
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcCharacterCount
 
 @this(
         mainTemplate: MainTemplate,
         formHelper: FormWithCSRF,
-        inputText: InputText,
         errorSummary: ErrorSummary,
         submitButton: SubmitButton,
-        appConfig: FrontendAppConfig
+        appConfig: FrontendAppConfig,
+        hmrcCharacterCount: HmrcCharacterCount
 )
 
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
@@ -38,15 +41,18 @@
 
         @errorSummary(form.errors)
 
-        @inputText(
-            field = form("value"),
-            label = messages("estateName.heading"),
-            labelAsHeading = true,
-            labelClass = Some("govuk-label--l"),
-            inputClass = Some("govuk-!-width-three-quarters"),
-            hint = Some(messages("estateName.hint")),
-            autocomplete = Some("name")
+        @hmrcCharacterCount(
+            CharacterCount(
+                id = form("value").id,
+                name = form("value").name,
+                maxLength = Some(35),
+                label = Label(Some(messages("estateName.heading"))),
+                value = form("value").value,
+                hint = Some(Hint(Some(messages("estateName.hint")))),
+                errorMessage = form("value").error.map(error => ErrorMessage(content = Text(error.format)))
+            )
         )
+
 
         @submitButton()
 
