@@ -65,10 +65,3 @@ a {
 h2 {
   @extend .govuk-heading-m;
 }
-
-estate-name-textarea {
-    resize: none;
-    textarea {
-        resize: none;
-    }
-}
