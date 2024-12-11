@@ -89,7 +89,7 @@ trait QuestionViewBehaviours[A] extends ViewBehaviours {
 
         s"show an error associated with the field '$field'" in {
 
-          val fieldId = if(field.contains("_")) {
+          val fieldId = if (field.contains("_")) {
             field.replace("_", ".")
           } else {
             field
@@ -107,7 +107,7 @@ trait QuestionViewBehaviours[A] extends ViewBehaviours {
           doc.getElementById(field).attr("aria-describedby") must include(errorSpan.attr("id"))
 
           // error is linked with input
-          errorSpan.parent().getElementsByAttributeValue("for", field).get(0).attr("for") mustBe field
+          errorSpan.parent().parent().getElementsByAttributeValue("for", field).get(0).attr("for") mustBe field
         }
       }
     }

@@ -28,8 +28,6 @@
         submitButton: SubmitButton,
         appConfig: FrontendAppConfig,
         hmrcCharacterCount: HmrcCharacterCount,
-        heading: Heading,
-
 )
 
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
@@ -43,7 +41,12 @@
 
         @errorSummary(form.errors)
 
-        @heading(messages("estateName.heading"))
+        <h1 class="govuk-label-wrapper">
+            <label class="govuk-label govuk-label--l" for="value">
+                @messages("estateName.heading")
+            </label>
+        </h1>
+
 
         @hmrcCharacterCount(
             CharacterCount(
