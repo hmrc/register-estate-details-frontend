@@ -20,6 +20,7 @@
 
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.charactercount.CharacterCount
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcCharacterCount
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
 
 @this(
         mainTemplate: MainTemplate,
@@ -41,24 +42,16 @@
 
         @errorSummary(form.errors)
 
-        <h1 class="govuk-label-wrapper">
-            <label class="govuk-label govuk-label--l" for="value">
-                @messages("estateName.heading")
-            </label>
-        </h1>
-
 
         @hmrcCharacterCount(
             CharacterCount(
-                id = form("value").id,
-                name = form("value").name,
                 rows = 1,
                 maxLength = Some(53),
                 label = Label(Some(messages("estateName.heading"))),
-                value = form("value").value,
                 hint = Some(Hint(content = HtmlContent(messages("estateName.hint")))),
-                errorMessage = form("value").error.map(error => ErrorMessage(content = Text(error.format)))
             )
+            .withHeading(Text(messages("estateName.heading")))
+            .withFormField(form("value"))
         )
 
 
