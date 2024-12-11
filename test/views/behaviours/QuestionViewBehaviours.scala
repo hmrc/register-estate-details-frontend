@@ -28,7 +28,6 @@ trait QuestionViewBehaviours[A] extends ViewBehaviours {
 
   val form: Form[A]
 
-  //scalastyle:off
   def pageWithTextFields(form: Form[A],
                          createView: Form[A] => HtmlFormat.Appendable,
                          messageKeyPrefix: String,
@@ -89,7 +88,7 @@ trait QuestionViewBehaviours[A] extends ViewBehaviours {
 
         s"show an error associated with the field '$field'" in {
 
-          val fieldId = if (field.contains("_")) {
+          val fieldId = if(field.contains("_")) {
             field.replace("_", ".")
           } else {
             field
