@@ -21,6 +21,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.charactercount.CharacterCount
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcCharacterCount
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLabel
 
 @this(
         mainTemplate: MainTemplate,
@@ -46,10 +47,11 @@
             CharacterCount(
                 rows = 1,
                 maxLength = Some(53),
-                label = Label(Some(messages("estateName.heading"))),
-                hint = Some(Hint(content = HtmlContent(messages("estateName.hint")))),
+                label = HmrcPageHeadingLabel(
+                    content = messages("estateName.heading").toText,
+                    classes = "govuk-!-margin-bottom-3 govuk-label--l"
+                )
             )
-            .withHeading(Text(messages("estateName.heading")))
             .withFormField(form("value"))
         )
 

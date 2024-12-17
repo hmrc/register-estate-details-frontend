@@ -53,8 +53,6 @@ class EstateNameViewSpec extends QuestionViewBehaviours[String] {
       )
     }
 
-    behave like pageWithHint(form, applyView, messageKeyPrefix + ".hint")
-
     behave like pageWithASubmitButton(applyView(form))
   }
 }
