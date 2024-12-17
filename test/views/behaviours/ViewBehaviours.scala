@@ -103,6 +103,8 @@ trait ViewBehaviours extends ViewSpecBase {
 
     "behave like a dynamic title page" when {
 
+      val doc = asDocument(view)
+
       "rendered" must {
 
         "have the correct banner title" in {
@@ -111,25 +113,21 @@ trait ViewBehaviours extends ViewSpecBase {
 
         "display the correct browser title" in {
 
-          val doc = asDocument(view)
           assertEqualsMessage(doc, "title", s"$messageKeyPrefix.title", messageKeyParam)
         }
 
         "display the correct page title" in {
 
-          val doc = asDocument(view)
           assertPageTitleEqualsMessage(doc, s"$messageKeyPrefix.heading", messageKeyParam)
         }
 
         "display the correct guidance" in {
 
-          val doc = asDocument(view)
           for (key <- expectedGuidanceKeys) assertContainsText(doc, messages(s"$messageKeyPrefix.$key"))
         }
 
         "display language toggles" in {
 
-          val doc = asDocument(view)
           assertRenderedByCssSelector(doc, "a[lang=cy]")
         }
       }
