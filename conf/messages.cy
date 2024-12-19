@@ -33,7 +33,6 @@ site.continue = Yn eich blaen
 service.name = Cofrestru Ystâd a’i Chynnal
 site.service_section = Enw’r ystâd
 site.textarea.char_limit = (Y terfyn yw {0} o gymeriadau)
-site.returnToRegistrationProgress = Yn ôl i gynnydd cofrestru
 site.sign_out = Allgofnodi
 site.sign_in = Mewngofnodi
 
