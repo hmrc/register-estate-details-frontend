@@ -31,7 +31,6 @@ class EstateConnector @Inject()(http: HttpClientV2, config : FrontendAppConfig) 
   private val correspondenceNameUrl = s"${config.estatesUrl}/estates/correspondence/name"
 
   def addCorrespondenceName(estateName: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
-  //  http.POST[JsValue, HttpResponse](correspondenceNameUrl, JsString(estateName))
     http.post(url"$correspondenceNameUrl").withBody(JsString(estateName)).execute[HttpResponse]
   }
 
@@ -42,13 +41,6 @@ class EstateConnector @Inject()(http: HttpClientV2, config : FrontendAppConfig) 
        case _ => Future.successful(None)
      }
    }
-
-//    http.GET[JsValue](correspondenceNameUrl) flatMap {
-//      _.validate[EstateDetails] match {
-//        case JsSuccess(details, _) => Future.successful(Some(details.name))
-//        case _ => Future.successful(None)
-//      }
-//    }
   }
 
 }
