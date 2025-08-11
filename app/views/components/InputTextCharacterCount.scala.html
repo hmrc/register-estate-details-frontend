@@ -39,14 +39,13 @@
     inputMode: Option[String] = None,
     maxLength: Option[Int],
     threshold: Option[Int] = Some(0),
-    maxWords: Option[Int] = None,
     countMessageClasses: String = ""
 )(implicit messages: Messages)
 
 @attrs = {
     @maxLength.filter(_ > 0).map {value => data-maxlength="@value"}
     @threshold.filter(_ > 0).map {value => data-threshold="@value"}
-    @maxWords.filter(_ > 0).map {value => data-maxwords="@value"}
+
 }
 
 @charactersUnderLimitText = @{
@@ -105,14 +104,14 @@
     )
         @if(messagesLanguage == Cy) {
             @govukHint(Hint(
-                content = Text("Gallwch nodi hyd at " + maxLength.getOrElse(maxWords.getOrElse(0)) + {if(maxWords.isDefined) " o eiriau" else " o gymeriadau"}),
+                content = Text("Gallwch nodi hyd at" + " o gymeriadau"),
                 id = Some(id + "-info"),
                 classes = "govuk-character-count__message" + {if (countMessageClasses == "") "" else " " + countMessageClasses},
                 attributes = Map("aria-live" -> "polite")
             ))
         } else {
             @govukHint(Hint(
-                content = Text("You can enter up to " + maxLength.getOrElse(maxWords.getOrElse(0)) + {if(maxWords.isDefined) " words" else " characters"}),
+                content = Text("You can enter up to" +  " characters"),
                 id = Some(id + "-info"),
                 classes = "govuk-character-count__message" + {if (countMessageClasses == "") "" else " " + countMessageClasses},
                 attributes = Map("aria-live" -> "polite")
