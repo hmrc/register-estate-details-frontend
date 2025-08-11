@@ -18,7 +18,10 @@ package views
 
 import play.api.data.{Form, FormError}
 import play.api.i18n.Messages
+import play.twirl.api.{Html, HtmlFormat}
 import viewmodels.RadioOption
+
+import scala.collection.immutable
 
 object ViewUtils {
 
@@ -51,4 +54,13 @@ object ViewUtils {
   def isDateError(error: String): Boolean = {
     error.toLowerCase.contains("date") || error.toLowerCase.contains("when")
   }
+
+
+  private[views] def govukPluralisedI18nAttributes(
+                                                    translationKey: String,
+                                                    pluralForms: Option[Map[String, String]]
+                                                  ): immutable.Iterable[Html] =
+    pluralForms.getOrElse(Map.empty).map { case (k, v) =>
+      Html(s"""data-i18n.$translationKey.${HtmlFormat.escape(k)}="${HtmlFormat.escape(v)}" """)
+    }
 }

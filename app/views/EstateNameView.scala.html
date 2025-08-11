@@ -16,10 +16,8 @@
 
 @import controllers.routes._
 @import config.FrontendAppConfig
-@import views.html.components.{Heading, ErrorSummary, SubmitButton}
+@import views.html.components.{InputTextCharacterCount,Heading, ErrorSummary, SubmitButton}
 
-@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.charactercount.CharacterCount
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcCharacterCount
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLabel
 
@@ -29,7 +27,7 @@
         errorSummary: ErrorSummary,
         submitButton: SubmitButton,
         appConfig: FrontendAppConfig,
-        hmrcCharacterCount: HmrcCharacterCount,
+        characterCount: InputTextCharacterCount
 )
 
 @(form: Form[_], mode: Mode)(implicit request: RequestHeader, messages: Messages)
@@ -43,17 +41,16 @@
 
         @errorSummary(form.errors)
 
-        @hmrcCharacterCount(
-            CharacterCount(
-                rows = 1,
-                maxLength = Some(53),
-                label = HmrcPageHeadingLabel(
-                    content = messages("estateName.heading").toText,
-                    classes = "govuk-!-margin-bottom-3 govuk-label--l"
-                )
-            )
-            .withFormField(form("value"))
-        )
+    @characterCount(
+        field = form("value"),
+        id = "value",
+        name = "value",
+        label = messages("estateName.title"),
+        isLabelHidden = true,
+        isPageHeading = true,
+        inputClass = Some("govuk-!-width-three-quarters"),
+        maxLength = Some(53)
+    )
 
         @submitButton()
 
