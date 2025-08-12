@@ -104,14 +104,14 @@
     )
         @if(messagesLanguage == Cy) {
             @govukHint(Hint(
-                content = Text("Gallwch nodi hyd at" + " o gymeriadau"),
+                content = Text("Gallwch nodi hyd at " + maxLength.getOrElse(0) + " o gymeriadau"),
                 id = Some(id + "-info"),
                 classes = "govuk-character-count__message" + {if (countMessageClasses == "") "" else " " + countMessageClasses},
                 attributes = Map("aria-live" -> "polite")
             ))
         } else {
             @govukHint(Hint(
-                content = Text("You can enter up to" +  " characters"),
+                content = Text("You can enter up to " + maxLength.getOrElse(0) +  " characters"),
                 id = Some(id + "-info"),
                 classes = "govuk-character-count__message" + {if (countMessageClasses == "") "" else " " + countMessageClasses},
                 attributes = Map("aria-live" -> "polite")
