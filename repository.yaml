@@ -1,4 +1,8 @@
+digital-service: Estates
+description: This service is responsible for collecting information about the estate, namely, the estate name.
 repoVisibility: public_0C3F0CE3E6E6448FAD341E7BFA50FCD333E06A20CFF05FCACE61154DDBBADF71
+type: Service
+service-type: Frontend
 test-repositories:
   - register-estate-performance-tests
   - estates-acceptance-tests
