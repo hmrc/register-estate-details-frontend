@@ -18,9 +18,14 @@ package repositories
 
 import com.google.inject.Singleton
 import config.FrontendAppConfig
-import models.UserAnswers
+import models.{UpdatedCounterValues, UserAnswers}
+import org.bson.BsonType
+import org.bson.types.ObjectId
+import org.mongodb.scala.Observable
+import org.mongodb.scala.bson.{BsonDateTime, BsonDocument}
 import org.mongodb.scala.model.Indexes.ascending
-import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, ReplaceOptions}
+import org.mongodb.scala.model._
+import play.api.i18n.Lang.logger
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
@@ -28,6 +33,7 @@ import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 
 @Singleton
 class DefaultSessionRepository @Inject()(val mongo: MongoComponent, val appConfig: FrontendAppConfig)(implicit val ec: ExecutionContext
@@ -47,6 +53,8 @@ class DefaultSessionRepository @Inject()(val mongo: MongoComponent, val appConfi
 )
   with SessionRepository {
 
+  val className = this.getClass.getSimpleName
+
   override def get(id: String): Future[Option[UserAnswers]] =
     collection.find(Filters.equal("_id", id)).headOption()
 
@@ -58,6 +66,29 @@ class DefaultSessionRepository @Inject()(val mongo: MongoComponent, val appConfi
     collection.replaceOne(filter = Filters.equal("_id", updatedAnswers.id), replacement = updatedAnswers, options = options).toFuture().map(_.wasAcknowledged())
   }
 
+
+  override def getAllInvalidDateDocuments(limit: Int): Observable[ObjectId] = {
+    val selector = Filters.not(Filters.`type`("lastUpdated", BsonType.DATE_TIME))
+    val sortById = Sorts.ascending("_id")
+    collection.find[BsonDocument](selector).sort(sortById).limit(limit)
+      .map(jsToObjectId)
+  }
+
+  private def jsToObjectId(js: BsonDocument): ObjectId =
+    Try(js.getObjectId("_id").getValue) match {
+      case Failure(exception) => logger.error(s"[$className][jsToObjectId] failed to fetch id from : $collectionName", exception)
+        throw new Exception("_id is not found")
+      case Success(value) => value
+    }
+
+  override def updateAllInvalidDateDocuments(ids: Seq[ObjectId]): Future[UpdatedCounterValues] = {
+    val update = Updates.set("lastUpdated", BsonDateTime(Instant.now().toEpochMilli))
+    val filterIn = Filters.in("_id", ids: _*)
+    collection.updateMany(filterIn, update).toFuture()
+      .map(_ => UpdatedCounterValues(matched = ids.size, updated = ids.size, errors = 0))
+      .recover { case _ => UpdatedCounterValues(matched = ids.size, updated = 0, errors = ids.size) }
+  }
+
 }
 
 trait SessionRepository {
@@ -65,4 +96,8 @@ trait SessionRepository {
   def get(id: String): Future[Option[UserAnswers]]
 
   def set(userAnswers: UserAnswers): Future[Boolean]
+
+  def getAllInvalidDateDocuments(limit: Int): Observable[ObjectId]
+
+  def updateAllInvalidDateDocuments(ids: Seq[ObjectId]): Future[UpdatedCounterValues]
 }
