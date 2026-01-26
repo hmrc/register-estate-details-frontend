@@ -19,8 +19,8 @@ package repositories
 import com.google.inject.Singleton
 import config.FrontendAppConfig
 import models.{UpdatedCounterValues, UserAnswers}
-import org.bson.BsonType
 import org.bson.types.ObjectId
+import org.bson.{BsonType, BsonValue}
 import org.mongodb.scala.Observable
 import org.mongodb.scala.bson.{BsonDateTime, BsonDocument}
 import org.mongodb.scala.model.Indexes.ascending
@@ -33,7 +33,7 @@ import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 @Singleton
 class DefaultSessionRepository @Inject()(val mongo: MongoComponent, val appConfig: FrontendAppConfig)(implicit val ec: ExecutionContext
@@ -70,16 +70,38 @@ class DefaultSessionRepository @Inject()(val mongo: MongoComponent, val appConfi
   override def getAllInvalidDateDocuments(limit: Int): Observable[ObjectId] = {
     val selector = Filters.not(Filters.`type`("lastUpdated", BsonType.DATE_TIME))
     val sortById = Sorts.ascending("_id")
-    collection.find[BsonDocument](selector).sort(sortById).limit(limit)
-      .map(jsToObjectId)
+
+    collection.find[BsonDocument](selector)
+      .sort(sortById)
+      .limit(limit)
+      .map { doc =>
+        val id: BsonValue = doc.get("_id")
+        val oidOpt: Option[ObjectId] =
+          if (id == null) {
+            None
+          } else {
+            jsToObjectId(id)
+          }
+        oidOpt
+      }
+      .collect { case Some(oid) => oid }
   }
 
-  private def jsToObjectId(js: BsonDocument): ObjectId =
-    Try(js.getObjectId("_id").getValue) match {
-      case Failure(exception) => logger.error(s"[$className][jsToObjectId] failed to fetch id from : $collectionName", exception)
-        throw new Exception("_id is not found")
-      case Success(value) => value
+
+
+  private def jsToObjectId(id: BsonValue): Option[ObjectId] = {
+    logger.debug(s"jsToObjectId id=$id")
+    id match {
+      case oid if oid.isObjectId =>
+        Some(oid.asObjectId().getValue)
+
+      case s if s.isString =>
+        Try(new ObjectId(s.asString().getValue)).toOption
+
+      case _ =>
+        None
     }
+  }
 
   override def updateAllInvalidDateDocuments(ids: Seq[ObjectId]): Future[UpdatedCounterValues] = {
     val update = Updates.set("lastUpdated", BsonDateTime(Instant.now().toEpochMilli))

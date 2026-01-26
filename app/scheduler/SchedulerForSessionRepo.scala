@@ -18,16 +18,18 @@ package scheduler
 
 import jakarta.inject.Inject
 import models.UpdatedCounterValues
-import org.apache.pekko.stream.{ActorAttributes, Materializer}
 import org.apache.pekko.stream.scaladsl.{Keep, Sink, SinkQueueWithCancel, Source}
+import org.apache.pekko.stream.{ActorAttributes, Materializer}
+import org.bson.types.ObjectId
 import play.api.{Configuration, Logger}
 import repositories.DefaultSessionRepository
-import org.bson.types.ObjectId
+
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 
 class SchedulerForSessionRepo @Inject()(defaultSessionRepository: DefaultSessionRepository,
                                         config: Configuration)
-                                       (implicit mat: Materializer) extends WorkerConfig {
+                                       (implicit mat: Materializer,ec: ExecutionContext) extends WorkerConfig {
 
 
   private val logger = Logger(this.getClass)
