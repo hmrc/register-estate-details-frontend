@@ -66,7 +66,12 @@ class DefaultSessionRepository @Inject()(val mongo: MongoComponent, val appConfi
 
 
   override def getAllInvalidDateDocuments(limit: Int): Observable[String] = {
-    val selector = Filters.not(Filters.`type`("lastUpdated", BsonType.DATE_TIME))
+    val selector =
+      Filters.or(
+        Filters.not(Filters.`type`("lastUpdated", BsonType.DATE_TIME)),
+        Filters.exists("lastUpdated", exists = false)
+      )
+
     val sortById = Sorts.ascending("_id")
 
     collection.find[BsonDocument](selector)
