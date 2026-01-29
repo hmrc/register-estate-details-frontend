@@ -30,22 +30,23 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DefaultSessionRepository @Inject()(val mongo: MongoComponent, val appConfig: FrontendAppConfig)(implicit val ec: ExecutionContext
+class DefaultSessionRepository @Inject() (val mongo: MongoComponent, val appConfig: FrontendAppConfig)(implicit
+  val ec: ExecutionContext
 ) extends PlayMongoRepository[UserAnswers](
-  collectionName = "user-answers",
-  mongoComponent = mongo,
-  domainFormat = UserAnswers.userAnswersFormat,
-  indexes = Seq(
-    IndexModel(
-      ascending("lastUpdated"),
-      indexOptions = IndexOptions()
-        .name("user-answers-last-updated-index")
-        .expireAfter(appConfig.cacheTtl, TimeUnit.SECONDS)
+      collectionName = "user-answers",
+      mongoComponent = mongo,
+      domainFormat = UserAnswers.userAnswersFormat,
+      indexes = Seq(
+        IndexModel(
+          ascending("lastUpdated"),
+          indexOptions = IndexOptions()
+            .name("user-answers-last-updated-index")
+            .expireAfter(appConfig.cacheTtl, TimeUnit.SECONDS)
+        )
+      ),
+      replaceIndexes = appConfig.dropIndexes
     )
-  ),
-  replaceIndexes = appConfig.dropIndexes
-)
-  with SessionRepository {
+    with SessionRepository {
 
   override def get(id: String): Future[Option[UserAnswers]] =
     collection.find(Filters.equal("_id", id)).headOption()
@@ -53,9 +54,12 @@ class DefaultSessionRepository @Inject()(val mongo: MongoComponent, val appConfi
   override def set(userAnswers: UserAnswers): Future[Boolean] = {
 
     val updatedAnswers = userAnswers copy (lastUpdated = Instant.now())
-    val options = ReplaceOptions().upsert(true)
+    val options        = ReplaceOptions().upsert(true)
 
-    collection.replaceOne(filter = Filters.equal("_id", updatedAnswers.id), replacement = updatedAnswers, options = options).toFuture().map(_.wasAcknowledged())
+    collection
+      .replaceOne(filter = Filters.equal("_id", updatedAnswers.id), replacement = updatedAnswers, options = options)
+      .toFuture()
+      .map(_.wasAcknowledged())
   }
 
 }

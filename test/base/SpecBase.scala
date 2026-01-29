@@ -30,7 +30,8 @@ import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 
-trait SpecBase extends PlaySpec with GuiceOneAppPerSuite with Mocked with TryValues with ScalaFutures with IntegrationPatience {
+trait SpecBase
+    extends PlaySpec with GuiceOneAppPerSuite with Mocked with TryValues with ScalaFutures with IntegrationPatience {
 
   val userAnswersId = "id"
 
@@ -48,8 +49,8 @@ trait SpecBase extends PlaySpec with GuiceOneAppPerSuite with Mocked with TryVal
 
   val defaultAppConfig = Seq(
     "play.filters.disabled" -> List("play.filters.csrf.CSRFFilter", "play.filters.csp.CSPFilter"),
-    "auditing.enabled" -> false,
-    "metrics.enabled" -> false
+    "auditing.enabled"      -> false,
+    "metrics.enabled"       -> false
   )
 
   protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
@@ -58,5 +59,7 @@ trait SpecBase extends PlaySpec with GuiceOneAppPerSuite with Mocked with TryVal
         bind[DataRequiredAction].to[DataRequiredActionImpl],
         bind[IdentifierAction].to[FakeIdentifierAction],
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
-      ).configure(defaultAppConfig: _*)
+      )
+      .configure(defaultAppConfig: _*)
+
 }

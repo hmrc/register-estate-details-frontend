@@ -31,45 +31,40 @@ import views.html.EstateNameView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class EstateNameController @Inject()(
-                                      override val messagesApi: MessagesApi,
-                                      val appConfig: FrontendAppConfig,
-                                      actions: Actions,
-                                      formProvider: EstateNameFormProvider,
-                                      connector: EstateConnector,
-                                      estatesStoreConnector: EstatesStoreConnector,
-                                      val controllerComponents: MessagesControllerComponents,
-                                      view: EstateNameView
-                                    )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class EstateNameController @Inject() (
+  override val messagesApi: MessagesApi,
+  val appConfig: FrontendAppConfig,
+  actions: Actions,
+  formProvider: EstateNameFormProvider,
+  connector: EstateConnector,
+  estatesStoreConnector: EstatesStoreConnector,
+  val controllerComponents: MessagesControllerComponents,
+  view: EstateNameView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController with I18nSupport {
 
   private val form: Form[String] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.authWithData {
-    implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.authWithData { implicit request =>
+    val preparedForm = request.userAnswers.get(EstateNamePage) match {
+      case None        => form
+      case Some(value) => form.fill(value)
+    }
 
-      val preparedForm = request.userAnswers.get(EstateNamePage) match {
-        case None => form
-        case Some(value) => form.fill(value)
-      }
-
-      Ok(view(preparedForm, mode))
+    Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = actions.authWithData.async {
-    implicit request =>
-
-      form.bindFromRequest().fold(
-        (formWithErrors: Form[_]) =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
-
-        value => {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.authWithData.async { implicit request =>
+    form
+      .bindFromRequest()
+      .fold(
+        (formWithErrors: Form[_]) => Future.successful(BadRequest(view(formWithErrors, mode))),
+        value =>
           for {
             _ <- connector.addCorrespondenceName(value)
             _ <- estatesStoreConnector.setTaskComplete()
-          } yield {
-            Redirect(appConfig.registerEstateHubOverview)
-          }
-        }
+          } yield Redirect(appConfig.registerEstateHubOverview)
       )
   }
+
 }

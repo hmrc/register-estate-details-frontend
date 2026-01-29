@@ -26,11 +26,12 @@ import utils.Session
 import scala.concurrent.Future
 
 @Singleton
-class SessionTimeoutController @Inject()(val appConfig: FrontendAppConfig,
-                                         val config: Configuration,
-                                         val env: Environment,
-                                         mcc: MessagesControllerComponents
-                                        ) extends FrontendController(mcc) with Logging {
+class SessionTimeoutController @Inject() (
+  val appConfig: FrontendAppConfig,
+  val config: Configuration,
+  val env: Environment,
+  mcc: MessagesControllerComponents
+) extends FrontendController(mcc) with Logging {
 
   val keepAlive: Action[AnyContent] = Action.async { implicit request =>
     logger.info(s"[Session ID: ${Session.id(hc)}] user has requested to extend their session")
@@ -38,7 +39,9 @@ class SessionTimeoutController @Inject()(val appConfig: FrontendAppConfig,
   }
 
   val timeout: Action[AnyContent] = Action.async { implicit request =>
-    logger.info(s"[Session ID: ${Session.id(hc)}] user has not requested to extend their session, user has been signed out")
+    logger.info(
+      s"[Session ID: ${Session.id(hc)}] user has not requested to extend their session, user has been signed out"
+    )
     Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad.url).withNewSession)
   }
 

@@ -37,9 +37,9 @@ class EstateNameControllerSpec extends SpecBase with MockitoSugar {
   val form = new EstateNameFormProvider().apply()
   val name = "Name"
 
-  private lazy val nameRoute = routes.EstateNameController.onPageLoad(NormalMode).url
+  private lazy val nameRoute          = routes.EstateNameController.onPageLoad(NormalMode).url
   private lazy val submitDetailsRoute = routes.EstateNameController.onSubmit(NormalMode).url
-  private lazy val completedRoute = "http://localhost:8822/register-an-estate/registration-progress"
+  private lazy val completedRoute     = "http://localhost:8822/register-an-estate/registration-progress"
 
   "Name Controller" must {
 
@@ -63,7 +63,7 @@ class EstateNameControllerSpec extends SpecBase with MockitoSugar {
 
     "populate the view correctly on a GET when the question has previously been answered" in {
 
-      val ua = emptyUserAnswers.set(EstateNamePage, name)
+      val ua          = emptyUserAnswers.set(EstateNamePage, name)
       val application = applicationBuilder(userAnswers = Some(ua.success.value)).build()
 
       val request = FakeRequest(GET, nameRoute)
@@ -84,7 +84,7 @@ class EstateNameControllerSpec extends SpecBase with MockitoSugar {
 
       val ua = emptyUserAnswers.set(EstateNamePage, name).success.value
 
-      val mockEstateConnector = mock[EstateConnector]
+      val mockEstateConnector       = mock[EstateConnector]
       val mockEstatesStoreConnector = mock[EstatesStoreConnector]
 
       val application =
@@ -93,8 +93,10 @@ class EstateNameControllerSpec extends SpecBase with MockitoSugar {
           .overrides(bind[EstatesStoreConnector].toInstance(mockEstatesStoreConnector))
           .build()
 
-      when(mockEstateConnector.addCorrespondenceName(any())(any(), any())).thenReturn(Future.successful(HttpResponse(OK, "")))
-      when(mockEstatesStoreConnector.setTaskComplete()(any(), any())).thenReturn(Future.successful(HttpResponse(OK, "")))
+      when(mockEstateConnector.addCorrespondenceName(any())(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(OK, "")))
+      when(mockEstatesStoreConnector.setTaskComplete()(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(OK, "")))
 
       val request = FakeRequest(POST, submitDetailsRoute).withFormUrlEncodedBody(("value", name))
 
@@ -160,4 +162,5 @@ class EstateNameControllerSpec extends SpecBase with MockitoSugar {
       application.stop()
     }
   }
+
 }

@@ -30,6 +30,8 @@ class EstateNameFormProvider @Inject() extends Mappings {
             maxLength(53, "estateName.error.length"),
             regexp("^[A-Za-z0-9 ,.()/&'-]*$", "estateName.error.invalidCharacters"),
             nonEmptyString("value", "estateName.error.required")
-          ))
+          )
+        )
     )
+
 }
