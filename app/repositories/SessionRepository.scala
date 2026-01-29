@@ -19,7 +19,6 @@ package repositories
 import com.google.inject.Singleton
 import config.FrontendAppConfig
 import models.{UpdatedCounterValues, UserAnswers}
-import org.bson.types.ObjectId
 import org.bson.{BsonType, BsonValue}
 import org.mongodb.scala.Observable
 import org.mongodb.scala.bson.{BsonDateTime, BsonDocument}
@@ -33,7 +32,6 @@ import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
 
 @Singleton
 class DefaultSessionRepository @Inject()(val mongo: MongoComponent, val appConfig: FrontendAppConfig)(implicit val ec: ExecutionContext
@@ -67,7 +65,7 @@ class DefaultSessionRepository @Inject()(val mongo: MongoComponent, val appConfi
   }
 
 
-  override def getAllInvalidDateDocuments(limit: Int): Observable[ObjectId] = {
+  override def getAllInvalidDateDocuments(limit: Int): Observable[String] = {
     val selector = Filters.not(Filters.`type`("lastUpdated", BsonType.DATE_TIME))
     val sortById = Sorts.ascending("_id")
 
@@ -76,40 +74,35 @@ class DefaultSessionRepository @Inject()(val mongo: MongoComponent, val appConfi
       .limit(limit)
       .map { doc =>
         val id: BsonValue = doc.get("_id")
-        val oidOpt: Option[ObjectId] =
-          if (id == null) {
-            None
-          } else {
-            jsToObjectId(id)
-          }
-        oidOpt
+
+        val idStr =
+          if (id == null) None
+          else if (id.isString) Some(id.asString().getValue)
+          else if (id.isObjectId) Some(id.asObjectId().getValue.toHexString)
+          else None
+        if (idStr.isEmpty) logger.error(s"Skipping doc with unsupported _id: $id")
+        idStr
       }
-      .collect { case Some(oid) => oid }
+      .collect { case Some(idStr) => idStr }
   }
 
-
-
-  private def jsToObjectId(id: BsonValue): Option[ObjectId] = {
-    logger.debug(s"jsToObjectId id=$id")
-    id match {
-      case oid if oid.isObjectId =>
-        Some(oid.asObjectId().getValue)
-
-      case s if s.isString =>
-        Try(new ObjectId(s.asString().getValue)).toOption
-
-      case _ =>
-        None
-    }
-  }
-
-  override def updateAllInvalidDateDocuments(ids: Seq[ObjectId]): Future[UpdatedCounterValues] = {
-    val update = Updates.set("lastUpdated", BsonDateTime(Instant.now().toEpochMilli))
+  override def updateAllInvalidDateDocuments(ids: Seq[String]): Future[UpdatedCounterValues] = {
+    val update   = Updates.set("lastUpdated", BsonDateTime(Instant.now().toEpochMilli))
     val filterIn = Filters.in("_id", ids: _*)
+
     collection.updateMany(filterIn, update).toFuture()
-      .map(_ => UpdatedCounterValues(matched = ids.size, updated = ids.size, errors = 0))
-      .recover { case _ => UpdatedCounterValues(matched = ids.size, updated = 0, errors = ids.size) }
+      .map { res =>
+        UpdatedCounterValues(
+          matched = res.getMatchedCount.toInt,
+          updated = res.getModifiedCount.toInt,
+          errors  = 0
+        )
+      }
+      .recover { case _ =>
+        UpdatedCounterValues(matched = ids.size, updated = 0, errors = ids.size)
+      }
   }
+
 
 }
 
@@ -119,7 +112,7 @@ trait SessionRepository {
 
   def set(userAnswers: UserAnswers): Future[Boolean]
 
-  def getAllInvalidDateDocuments(limit: Int): Observable[ObjectId]
+  def getAllInvalidDateDocuments(limit: Int): Observable[String]
 
-  def updateAllInvalidDateDocuments(ids: Seq[ObjectId]): Future[UpdatedCounterValues]
+  def updateAllInvalidDateDocuments(ids: Seq[String]): Future[UpdatedCounterValues]
 }

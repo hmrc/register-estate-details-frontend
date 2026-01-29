@@ -20,7 +20,6 @@ import jakarta.inject.Inject
 import models.UpdatedCounterValues
 import org.apache.pekko.stream.scaladsl.{Keep, Sink, SinkQueueWithCancel, Source}
 import org.apache.pekko.stream.{ActorAttributes, Materializer}
-import org.bson.types.ObjectId
 import play.api.{Configuration, Logger}
 import repositories.DefaultSessionRepository
 
@@ -29,8 +28,7 @@ import scala.concurrent.duration.FiniteDuration
 
 class SchedulerForSessionRepo @Inject()(defaultSessionRepository: DefaultSessionRepository,
                                         config: Configuration)
-                                       (implicit mat: Materializer,ec: ExecutionContext) extends WorkerConfig {
-
+                                       (implicit mat: Materializer, ec: ExecutionContext) extends WorkerConfig {
 
   private val logger = Logger(this.getClass)
   private val initialDelay: FiniteDuration = durationValueFromConfig("schedulers.initial-delay", config)
@@ -55,19 +53,17 @@ class SchedulerForSessionRepo @Inject()(defaultSessionRepository: DefaultSession
     logger.info(s"started [SchedulerForSessionRepo][fixBadUpdatedAt] [$defaultSessionRepository] method with limit = $limit")
     Source
       .fromPublisher(defaultSessionRepository.getAllInvalidDateDocuments(limit = limit))
-      .fold(List.empty[ObjectId])((acc, id) => id :: acc)
+      .fold(List.empty[String])((acc, id) => id :: acc)
       .mapAsync(parallelism = 1) { ids =>
         if (ids.isEmpty) {
-
           scala.concurrent.Future.successful(UpdatedCounterValues(0, 0, 0))
             .map(_.report(defaultSessionRepository.className))(mat.executionContext)
 
         } else {
-
           defaultSessionRepository.updateAllInvalidDateDocuments(ids)
             .map(_.report(defaultSessionRepository.className))(mat.executionContext)
         }
-      }.map{ repo =>
+      }.map { repo =>
         logger.info(s"[SchedulerForRegistrationSubmissionRepo][fixBadUpdatedAt] ended $repo")
         repo
       }
