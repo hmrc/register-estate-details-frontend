@@ -23,7 +23,7 @@ import org.apache.pekko.stream.{ActorAttributes, Materializer}
 import play.api.{Configuration, Logger}
 import repositories.DefaultSessionRepository
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.FiniteDuration
 
 class SchedulerForSessionRepo @Inject()(defaultSessionRepository: DefaultSessionRepository,
@@ -56,7 +56,7 @@ class SchedulerForSessionRepo @Inject()(defaultSessionRepository: DefaultSession
       .fold(List.empty[String])((acc, id) => id :: acc)
       .mapAsync(parallelism = 1) { ids =>
         if (ids.isEmpty) {
-          scala.concurrent.Future.successful(UpdatedCounterValues(0, 0, 0))
+          Future.successful(UpdatedCounterValues(0, 0, 0))
             .map(_.report(defaultSessionRepository.className))(mat.executionContext)
 
         } else {
