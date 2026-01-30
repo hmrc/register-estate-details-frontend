@@ -39,7 +39,7 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   lazy val locationCanonicalList: String      = configuration.get[String]("location.canonical.list.all")
   lazy val locationCanonicalListNonUK: String = configuration.get[String]("location.canonical.list.nonUK")
 
-  lazy val estatesUrl: String      = configuration.get[Service]("microservice.services.estates").baseUrl
+  lazy val estatesUrl: String = configuration.get[Service]("microservice.services.estates").baseUrl
 
   lazy val estatesStoreUrl: String =
     configuration.get[Service]("microservice.services.estates-store").baseUrl + "/estates-store"
@@ -49,7 +49,7 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   lazy val languageTranslationEnabled: Boolean =
     configuration.get[Boolean]("microservice.services.features.welsh-translation")
 
-  lazy val cacheTtl: Long  = configuration.get[Long]("mongodb.timeToLiveInSeconds")
+  lazy val cacheTtl: Long = configuration.get[Long]("mongodb.timeToLiveInSeconds")
 
   val dropIndexes: Boolean =
     configuration.getOptional[Boolean]("microservice.services.features.mongo.dropIndexes").getOrElse(false)
