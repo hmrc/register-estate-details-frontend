@@ -37,19 +37,17 @@ class DefaultSessionRepositorySpec extends AnyWordSpec
   with BeforeAndAfterEach
   with ScalaFutures {
 
-  override def beforeEach(): Unit =
-    sessionRepository.collection.deleteMany(BsonDocument()).toFuture().futureValue
-
   val config: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
   val sessionRepository: DefaultSessionRepository = app.injector.instanceOf[DefaultSessionRepository]
-
   val insertDataCollection =
     sessionRepository.mongo.database
       .getCollection[BsonDocument]("user-answers")
-
   private val data: JsObject = Json.obj("foo" -> "bar")
   private val lastUpdated: Instant = Instant.now.minus(5, ChronoUnit.MINUTES)
   private val userAnswers: UserAnswers = UserAnswers("id", data, lastUpdated)
+
+  override def beforeEach(): Unit =
+    sessionRepository.collection.deleteMany(BsonDocument()).toFuture().futureValue
 
   ".set" should {
 
@@ -118,6 +116,16 @@ class DefaultSessionRepositorySpec extends AnyWordSpec
       ids must not contain ("id1")
     }
 
+  }
+
+  "updateAllInvalidDateDocuments" should {
+    "return matched=0 and updated=0 when no ids exist" in {
+      val counters = sessionRepository.updateAllInvalidDateDocuments(Seq("no-id")).futureValue
+
+      counters.errors mustBe 0
+      counters.matched mustBe 0
+      counters.updated mustBe 0
+    }
   }
 
 
