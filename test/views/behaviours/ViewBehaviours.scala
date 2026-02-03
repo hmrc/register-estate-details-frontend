@@ -22,12 +22,10 @@ import views.ViewSpecBase
 
 trait ViewBehaviours extends ViewSpecBase {
 
-  private def findBannerTitle(view: HtmlFormat.Appendable):String =
+  private def findBannerTitle(view: HtmlFormat.Appendable): String =
     asDocument(view).getElementsByClass("govuk-service-navigation__service-name").text().trim
 
-  def normalPage(view: HtmlFormat.Appendable,
-                 messageKeyPrefix: String,
-                 expectedGuidanceKeys: String*): Unit = {
+  def normalPage(view: HtmlFormat.Appendable, messageKeyPrefix: String, expectedGuidanceKeys: String*): Unit =
 
     "behave like a normal page" when {
 
@@ -62,9 +60,8 @@ trait ViewBehaviours extends ViewSpecBase {
         }
       }
     }
-  }
 
-  def pageWithBackLink(view: HtmlFormat.Appendable): Unit = {
+  def pageWithBackLink(view: HtmlFormat.Appendable): Unit =
 
     "behave like a page with a back link" must {
 
@@ -74,9 +71,8 @@ trait ViewBehaviours extends ViewSpecBase {
         assertRenderedById(doc, "back-link")
       }
     }
-  }
 
-  def pageWithASubmitButton(view: HtmlFormat.Appendable) = {
+  def pageWithASubmitButton(view: HtmlFormat.Appendable) =
 
     "behave like a page with a submit button" must {
       "have a submit button" in {
@@ -84,9 +80,8 @@ trait ViewBehaviours extends ViewSpecBase {
         assertRenderedById(doc, "submit")
       }
     }
-  }
 
-  def pageWithoutLogoutButton(view: HtmlFormat.Appendable) = {
+  def pageWithoutLogoutButton(view: HtmlFormat.Appendable) =
 
     "behave like a page without a logout button" must {
       "not have a logout button" in {
@@ -94,12 +89,13 @@ trait ViewBehaviours extends ViewSpecBase {
         assertNotRenderedById(doc, "logOut")
       }
     }
-  }
 
-  def dynamicTitlePage(view: HtmlFormat.Appendable,
-                       messageKeyPrefix: String,
-                       messageKeyParam: String,
-                       expectedGuidanceKeys: String*): Unit = {
+  def dynamicTitlePage(
+    view: HtmlFormat.Appendable,
+    messageKeyPrefix: String,
+    messageKeyParam: String,
+    expectedGuidanceKeys: String*
+  ): Unit =
 
     "behave like a dynamic title page" when {
 
@@ -111,38 +107,28 @@ trait ViewBehaviours extends ViewSpecBase {
           findBannerTitle(view) mustBe messages("service.name")
         }
 
-        "display the correct browser title" in {
-
+        "display the correct browser title" in
           assertEqualsMessage(doc, "title", s"$messageKeyPrefix.title", messageKeyParam)
-        }
 
-        "display the correct page title" in {
-
+        "display the correct page title" in
           assertPageTitleEqualsMessage(doc, s"$messageKeyPrefix.heading", messageKeyParam)
-        }
 
         "display the correct guidance" in {
 
           for (key <- expectedGuidanceKeys) assertContainsText(doc, messages(s"$messageKeyPrefix.$key"))
         }
 
-        "display language toggles" in {
-
+        "display language toggles" in
           assertRenderedByCssSelector(doc, "a[lang=cy]")
-        }
       }
     }
-  }
 
-  def pageWithHint[A](form: Form[A],
-                      createView: Form[A] => HtmlFormat.Appendable,
-                      expectedHintKey: String): Unit = {
+  def pageWithHint[A](form: Form[A], createView: Form[A] => HtmlFormat.Appendable, expectedHintKey: String): Unit =
 
     "behave like a page with hint text" in {
 
       val doc = asDocument(createView(form))
       assertContainsHint(doc, "value", Some(messages(expectedHintKey)))
     }
-  }
 
 }

@@ -26,7 +26,7 @@ import views.html.EstateNameView
 class EstateNameViewSpec extends QuestionViewBehaviours[String] {
 
   val messageKeyPrefix = "estateName"
-  val name = "Name"
+  val name             = "Name"
 
   override val form: Form[String] = new EstateNameFormProvider().apply()
 
@@ -55,4 +55,5 @@ class EstateNameViewSpec extends QuestionViewBehaviours[String] {
 
     behave like pageWithASubmitButton(applyView(form))
   }
+
 }

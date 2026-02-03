@@ -25,10 +25,7 @@ import utils.WireMockHelper
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class EstatesStoreConnectorSpec extends SpecBase
-  with ScalaFutures
-  with IntegrationPatience
-  with WireMockHelper {
+class EstatesStoreConnectorSpec extends SpecBase with ScalaFutures with IntegrationPatience with WireMockHelper {
 
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
@@ -39,14 +36,14 @@ class EstatesStoreConnectorSpec extends SpecBase
         .configure(
           Seq(
             "microservice.services.estates-store.port" -> server.port(),
-            "auditing.enabled" -> false
+            "auditing.enabled"                         -> false
           ): _*
-        ).build()
+        )
+        .build()
 
       val connector = application.injector.instanceOf[EstatesStoreConnector]
 
-      val json = Json.parse(
-        """
+      val json = Json.parse("""
           |{
           |  "details": true,
           |  "personalRepresentative": false,
@@ -62,9 +59,8 @@ class EstatesStoreConnectorSpec extends SpecBase
 
       val futureResult = connector.setTaskComplete()
 
-      whenReady(futureResult) {
-        r =>
-          r.status mustBe 200
+      whenReady(futureResult) { r =>
+        r.status mustBe 200
       }
 
       application.stop()
@@ -75,9 +71,10 @@ class EstatesStoreConnectorSpec extends SpecBase
         .configure(
           Seq(
             "microservice.services.estates-store.port" -> server.port(),
-            "auditing.enabled" -> false
+            "auditing.enabled"                         -> false
           ): _*
-        ).build()
+        )
+        .build()
 
       val connector = application.injector.instanceOf[EstatesStoreConnector]
 
@@ -91,7 +88,7 @@ class EstatesStoreConnectorSpec extends SpecBase
       whenReady(futureResult.failed) {
         case UpstreamErrorResponse.Upstream5xxResponse(e) =>
           e.statusCode mustBe 500
-        case _ =>
+        case _                                            =>
           fail()
       }
 

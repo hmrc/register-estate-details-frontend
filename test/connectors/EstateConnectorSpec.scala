@@ -29,13 +29,20 @@ import utils.WireMockHelper
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class EstateConnectorSpec extends SpecBase with Generators with WireMockHelper with ScalaFutures
-  with Inside with BeforeAndAfterAll with BeforeAndAfterEach with IntegrationPatience {
+class EstateConnectorSpec
+    extends SpecBase
+    with Generators
+    with WireMockHelper
+    with ScalaFutures
+    with Inside
+    with BeforeAndAfterAll
+    with BeforeAndAfterEach
+    with IntegrationPatience {
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  val utr = "1000000008"
-  val index = 0
-  val description = "description"
+  val utr             = "1000000008"
+  val index           = 0
+  val description     = "description"
   val date: LocalDate = LocalDate.parse("2019-02-03")
 
   "estate connector" when {
@@ -52,9 +59,10 @@ class EstateConnectorSpec extends SpecBase with Generators with WireMockHelper w
           .configure(
             Seq(
               "microservice.services.estates.port" -> server.port(),
-              "auditing.enabled" -> false
+              "auditing.enabled"                   -> false
             ): _*
-          ).build()
+          )
+          .build()
 
         val connector = application.injector.instanceOf[EstateConnector]
 
@@ -76,9 +84,10 @@ class EstateConnectorSpec extends SpecBase with Generators with WireMockHelper w
           .configure(
             Seq(
               "microservice.services.estates.port" -> server.port(),
-              "auditing.enabled" -> false
+              "auditing.enabled"                   -> false
             ): _*
-          ).build()
+          )
+          .build()
 
         val connector = application.injector.instanceOf[EstateConnector]
 
@@ -111,9 +120,10 @@ class EstateConnectorSpec extends SpecBase with Generators with WireMockHelper w
           .configure(
             Seq(
               "microservice.services.estates.port" -> server.port(),
-              "auditing.enabled" -> false
+              "auditing.enabled"                   -> false
             ): _*
-          ).build()
+          )
+          .build()
 
         val connector = application.injector.instanceOf[EstateConnector]
 
@@ -124,9 +134,8 @@ class EstateConnectorSpec extends SpecBase with Generators with WireMockHelper w
 
         val futureValue = connector.getCorrespondenceName()
 
-        whenReady(futureValue) {
-          result =>
-            result mustBe Some("Test Estate")
+        whenReady(futureValue) { result =>
+          result mustBe Some("Test Estate")
         }
 
         application.stop()
@@ -143,9 +152,10 @@ class EstateConnectorSpec extends SpecBase with Generators with WireMockHelper w
           .configure(
             Seq(
               "microservice.services.estates.port" -> server.port(),
-              "auditing.enabled" -> false
+              "auditing.enabled"                   -> false
             ): _*
-          ).build()
+          )
+          .build()
 
         val connector = application.injector.instanceOf[EstateConnector]
 
@@ -156,13 +166,13 @@ class EstateConnectorSpec extends SpecBase with Generators with WireMockHelper w
 
         val futureValue = connector.getCorrespondenceName()
 
-        whenReady(futureValue) {
-          result =>
-            result mustBe None
+        whenReady(futureValue) { result =>
+          result mustBe None
         }
 
         application.stop()
       }
     }
   }
+
 }

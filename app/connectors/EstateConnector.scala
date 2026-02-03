@@ -26,21 +26,21 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EstateConnector @Inject()(http: HttpClientV2, config : FrontendAppConfig) {
+class EstateConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig) {
 
   private val correspondenceNameUrl = s"${config.estatesUrl}/estates/correspondence/name"
 
-  def addCorrespondenceName(estateName: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+  def addCorrespondenceName(
+    estateName: String
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] =
     http.post(url"$correspondenceNameUrl").withBody(JsString(estateName)).execute[HttpResponse]
-  }
 
-  def getCorrespondenceName()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
-   http.get(url"$correspondenceNameUrl").execute[JsValue] flatMap {
-     _.validate[EstateDetails] match {
-       case JsSuccess(details, _) => Future.successful(Some(details.name))
-       case _ => Future.successful(None)
-     }
-   }
-  }
+  def getCorrespondenceName()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
+    http.get(url"$correspondenceNameUrl").execute[JsValue] flatMap {
+      _.validate[EstateDetails] match {
+        case JsSuccess(details, _) => Future.successful(Some(details.name))
+        case _                     => Future.successful(None)
+      }
+    }
 
 }

@@ -30,7 +30,7 @@ trait WorkerConfig {
     case NonFatal(e) =>
       logger.warn(s"[${this.getClass.getName}][supervisionStrategy] NonFatal exception returned, $e")
       Supervision.resume
-    case e =>
+    case e           =>
       logger.error(s"[${this.getClass.getName}][supervisionStrategy] Fatal exception returned, $e")
       Supervision.stop
   }

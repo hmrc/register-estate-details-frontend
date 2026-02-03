@@ -30,21 +30,24 @@ import play.api.libs.json.{JsObject, Json}
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
-class DefaultSessionRepositorySpec extends AnyWordSpec
-  with Matchers
-  with GuiceOneAppPerSuite
-  with OptionValues
-  with BeforeAndAfterEach
-  with ScalaFutures {
+class DefaultSessionRepositorySpec
+    extends AnyWordSpec
+    with Matchers
+    with GuiceOneAppPerSuite
+    with OptionValues
+    with BeforeAndAfterEach
+    with ScalaFutures {
 
-  val config: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
+  val config: FrontendAppConfig                   = app.injector.instanceOf[FrontendAppConfig]
   val sessionRepository: DefaultSessionRepository = app.injector.instanceOf[DefaultSessionRepository]
-  val insertDataCollection =
+
+  val insertDataCollection                        =
     sessionRepository.mongo.database
       .getCollection[BsonDocument]("user-answers")
-  private val data: JsObject = Json.obj("foo" -> "bar")
-  private val lastUpdated: Instant = Instant.now.minus(5, ChronoUnit.MINUTES)
-  private val userAnswers: UserAnswers = UserAnswers("id", data, lastUpdated)
+
+  private val data: JsObject                      = Json.obj("foo" -> "bar")
+  private val lastUpdated: Instant                = Instant.now.minus(5, ChronoUnit.MINUTES)
+  private val userAnswers: UserAnswers            = UserAnswers("id", data, lastUpdated)
 
   override def beforeEach(): Unit =
     sessionRepository.collection.deleteMany(BsonDocument()).toFuture().futureValue
@@ -55,8 +58,9 @@ class DefaultSessionRepositorySpec extends AnyWordSpec
 
       val expectedResult = userAnswers copy (lastUpdated = Instant.now())
 
-      val setResult = sessionRepository.set(userAnswers).futureValue
-      val updatedRecord = sessionRepository.collection.find(Filters.equal("_id", userAnswers.id)).headOption().futureValue.value
+      val setResult     = sessionRepository.set(userAnswers).futureValue
+      val updatedRecord =
+        sessionRepository.collection.find(Filters.equal("_id", userAnswers.id)).headOption().futureValue.value
 
       setResult mustEqual true
       updatedRecord.id mustEqual expectedResult.id
@@ -91,13 +95,16 @@ class DefaultSessionRepositorySpec extends AnyWordSpec
 
     "return ids for docs where lastUpdated exists but is NOT a BSON DateTime" in {
 
-      insertDataCollection.insertOne(
-        BsonDocument(
-          "_id" -> BsonString("id-string-lastUpdated"),
-          "data" -> BsonDocument("foo1" -> BsonString("bar1")),
-          "lastUpdated" -> BsonString("2026-01-30T13:06:19.192Z")
+      insertDataCollection
+        .insertOne(
+          BsonDocument(
+            "_id"         -> BsonString("id-string-lastUpdated"),
+            "data"        -> BsonDocument("foo1" -> BsonString("bar1")),
+            "lastUpdated" -> BsonString("2026-01-30T13:06:19.192Z")
+          )
         )
-      ).toFuture().futureValue
+        .toFuture()
+        .futureValue
 
       val result =
         sessionRepository.getAllInvalidDateDocuments(limit = 100).toFuture().futureValue
@@ -106,14 +113,16 @@ class DefaultSessionRepositorySpec extends AnyWordSpec
     }
 
     "NOT return ids for docs where lastUpdated is a BSON DateTime" in {
-      insertDataCollection.insertOne(BsonDocument(
-        "_id" -> BsonString("id1"),
-        "data" -> BsonDocument("foo" -> BsonString("bar")),
-        "lastUpdated" -> BsonDateTime(Instant.now().toEpochMilli)
-      ))
+      insertDataCollection.insertOne(
+        BsonDocument(
+          "_id"         -> BsonString("id1"),
+          "data"        -> BsonDocument("foo" -> BsonString("bar")),
+          "lastUpdated" -> BsonDateTime(Instant.now().toEpochMilli)
+        )
+      )
 
       val ids = sessionRepository.getAllInvalidDateDocuments(limit = 100).toFuture().futureValue
-      ids must not contain ("id1")
+      ids must not contain "id1"
     }
 
   }
@@ -122,11 +131,10 @@ class DefaultSessionRepositorySpec extends AnyWordSpec
     "return matched=0 and updated=0 when no ids exist" in {
       val counters = sessionRepository.updateAllInvalidDateDocuments(Seq("no-id")).futureValue
 
-      counters.errors mustBe 0
+      counters.errors  mustBe 0
       counters.matched mustBe 0
       counters.updated mustBe 0
     }
   }
-
 
 }
