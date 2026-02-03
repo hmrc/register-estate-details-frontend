@@ -18,15 +18,17 @@ package models
 
 import pages._
 import play.api.libs.json._
+import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import scala.util.{Failure, Success, Try}
 
 final case class UserAnswers(
-  id: String,
-  data: JsObject = Json.obj(),
-  lastUpdated: Instant = Instant.now()
-) {
+                              id: String,
+                              data: JsObject = Json.obj(),
+                              lastUpdated: Instant = Instant.now.truncatedTo(ChronoUnit.MILLIS)
+                            ) {
 
   def get[A](page: QuestionPage[A])(implicit rds: Reads[A]): Option[A] =
     Reads.optionNoError(Reads.at(page.path)).reads(data).getOrElse(None)
@@ -40,9 +42,10 @@ final case class UserAnswers(
         Failure(JsResultException(errors))
     }
 
-    updatedData.flatMap { d =>
-      val updatedAnswers = copy(data = d)
-      page.cleanup(Some(value), updatedAnswers)
+    updatedData.flatMap {
+      d =>
+        val updatedAnswers = copy(data = d)
+        page.cleanup(Some(value), updatedAnswers)
     }
   }
 
@@ -55,9 +58,10 @@ final case class UserAnswers(
         Success(data)
     }
 
-    updatedData.flatMap { d =>
-      val updatedAnswers = copy(data = d)
-      page.cleanup(None, updatedAnswers)
+    updatedData.flatMap {
+      d =>
+        val updatedAnswers = copy(data = d)
+        page.cleanup(None, updatedAnswers)
     }
   }
 
@@ -65,26 +69,26 @@ final case class UserAnswers(
 
 object UserAnswers {
 
-  implicit lazy val reads: Reads[UserAnswers] = {
+  val reads: Reads[UserAnswers] = {
 
     import play.api.libs.functional.syntax._
 
     (
       (__ \ "_id").read[String] and
         (__ \ "data").read[JsObject] and
-        (__ \ "lastUpdated").read[Instant]
-    )(UserAnswers.apply _)
+        (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat).orElse(Reads.pure(Instant.now()))
+      )(UserAnswers.apply _)
   }
 
-  implicit lazy val writes: OWrites[UserAnswers] = {
+  val writes: OWrites[UserAnswers] = {
 
     import play.api.libs.functional.syntax._
 
     (
       (__ \ "_id").write[String] and
         (__ \ "data").write[JsObject] and
-        (__ \ "lastUpdated").write[Instant]
-    )(unlift(UserAnswers.unapply))
+        (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat)
+      )(unlift(UserAnswers.unapply))
   }
 
   implicit val userAnswersFormat: OFormat[UserAnswers] =

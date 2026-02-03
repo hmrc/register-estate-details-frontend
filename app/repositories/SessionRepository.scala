@@ -18,9 +18,13 @@ package repositories
 
 import com.google.inject.Singleton
 import config.FrontendAppConfig
-import models.UserAnswers
+import models.{UpdatedCounterValues, UserAnswers}
+import org.bson.{BsonType, BsonValue}
+import org.mongodb.scala.Observable
+import org.mongodb.scala.bson.{BsonDateTime, BsonDocument}
 import org.mongodb.scala.model.Indexes.ascending
-import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, ReplaceOptions}
+import org.mongodb.scala.model._
+import play.api.i18n.Lang.logger
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
@@ -48,6 +52,8 @@ class DefaultSessionRepository @Inject() (val mongo: MongoComponent, val appConf
     )
     with SessionRepository {
 
+  val className = this.getClass.getSimpleName
+
   override def get(id: String): Future[Option[UserAnswers]] =
     collection.find(Filters.equal("_id", id)).headOption()
 
@@ -62,6 +68,51 @@ class DefaultSessionRepository @Inject() (val mongo: MongoComponent, val appConf
       .map(_.wasAcknowledged())
   }
 
+
+  override def getAllInvalidDateDocuments(limit: Int): Observable[String] = {
+    val selector =
+      Filters.or(
+        Filters.not(Filters.`type`("lastUpdated", BsonType.DATE_TIME)),
+        Filters.exists("lastUpdated", exists = false)
+      )
+
+    val sortById = Sorts.ascending("_id")
+
+    collection.find[BsonDocument](selector)
+      .sort(sortById)
+      .limit(limit)
+      .map { doc =>
+        val id: BsonValue = doc.get("_id")
+
+        val idStr =
+          if (id == null) None
+          else if (id.isString) Some(id.asString().getValue)
+          else if (id.isObjectId) Some(id.asObjectId().getValue.toHexString)
+          else None
+        if (idStr.isEmpty) logger.error(s"Skipping doc with unsupported _id: $id")
+        idStr
+      }
+      .collect { case Some(idStr) => idStr }
+  }
+
+  override def updateAllInvalidDateDocuments(ids: Seq[String]): Future[UpdatedCounterValues] = {
+    val update   = Updates.set("lastUpdated", BsonDateTime(Instant.now().toEpochMilli))
+    val filterIn = Filters.in("_id", ids: _*)
+
+    collection.updateMany(filterIn, update).toFuture()
+      .map { res =>
+        UpdatedCounterValues(
+          matched = res.getMatchedCount.toInt,
+          updated = res.getModifiedCount.toInt,
+          errors  = 0
+        )
+      }
+      .recover { case _ =>
+        UpdatedCounterValues(matched = ids.size, updated = 0, errors = ids.size)
+      }
+  }
+
+
 }
 
 trait SessionRepository {
@@ -69,4 +120,8 @@ trait SessionRepository {
   def get(id: String): Future[Option[UserAnswers]]
 
   def set(userAnswers: UserAnswers): Future[Boolean]
+
+  def getAllInvalidDateDocuments(limit: Int): Observable[String]
+
+  def updateAllInvalidDateDocuments(ids: Seq[String]): Future[UpdatedCounterValues]
 }
