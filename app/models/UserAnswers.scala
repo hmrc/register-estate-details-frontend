@@ -18,14 +18,16 @@ package models
 
 import pages._
 import play.api.libs.json._
+import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import scala.util.{Failure, Success, Try}
 
 final case class UserAnswers(
                               id: String,
                               data: JsObject = Json.obj(),
-                              lastUpdated: Instant = Instant.now()
+                              lastUpdated: Instant = Instant.now.truncatedTo(ChronoUnit.MILLIS)
                             ) {
 
   def get[A](page: QuestionPage[A])(implicit rds: Reads[A]): Option[A] =
@@ -42,7 +44,7 @@ final case class UserAnswers(
 
     updatedData.flatMap {
       d =>
-        val updatedAnswers = copy (data = d)
+        val updatedAnswers = copy(data = d)
         page.cleanup(Some(value), updatedAnswers)
     }
   }
@@ -58,33 +60,34 @@ final case class UserAnswers(
 
     updatedData.flatMap {
       d =>
-        val updatedAnswers = copy (data = d)
+        val updatedAnswers = copy(data = d)
         page.cleanup(None, updatedAnswers)
     }
   }
 }
 
 object UserAnswers {
-  implicit lazy val reads: Reads[UserAnswers] = {
+
+  val reads: Reads[UserAnswers] = {
 
     import play.api.libs.functional.syntax._
 
     (
       (__ \ "_id").read[String] and
-      (__ \ "data").read[JsObject] and
-      (__ \ "lastUpdated").read[Instant]
-    ) (UserAnswers.apply _)
+        (__ \ "data").read[JsObject] and
+        (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat).orElse(Reads.pure(Instant.now()))
+      )(UserAnswers.apply _)
   }
 
-  implicit lazy val writes: OWrites[UserAnswers] = {
+  val writes: OWrites[UserAnswers] = {
 
     import play.api.libs.functional.syntax._
 
     (
       (__ \ "_id").write[String] and
-      (__ \ "data").write[JsObject] and
-      (__ \ "lastUpdated").write[Instant]
-    ) (unlift(UserAnswers.unapply))
+        (__ \ "data").write[JsObject] and
+        (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat)
+      )(unlift(UserAnswers.unapply))
   }
 
 

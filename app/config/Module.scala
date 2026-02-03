@@ -18,9 +18,11 @@ package config
 
 import com.google.inject.AbstractModule
 import controllers.actions._
+import play.api.{Configuration, Environment}
 import repositories.{DefaultSessionRepository, SessionRepository}
+import scheduler.SchedulerForSessionRepo
 
-class Module extends AbstractModule {
+class Module(environment: Environment, configuration: Configuration) extends AbstractModule {
 
   override def configure(): Unit = {
 
@@ -31,5 +33,9 @@ class Module extends AbstractModule {
     bind(classOf[IdentifierAction]).to(classOf[AuthenticatedIdentifierAction]).asEagerSingleton()
 
     bind(classOf[SessionRepository]).to(classOf[DefaultSessionRepository]).asEagerSingleton()
+    val schedulerEnabled: Boolean = configuration.getOptional[Boolean]("schedulers.enabled").getOrElse(false)
+    if (schedulerEnabled) {
+      bind(classOf[SchedulerForSessionRepo]).asEagerSingleton()
+    }
   }
 }

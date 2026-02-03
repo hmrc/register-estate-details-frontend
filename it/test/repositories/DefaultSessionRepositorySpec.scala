@@ -18,7 +18,7 @@ package repositories
 
 import config.FrontendAppConfig
 import models.UserAnswers
-import org.mongodb.scala.bson.BsonDocument
+import org.mongodb.scala.bson.{BsonDateTime, BsonDocument, BsonString}
 import org.mongodb.scala.model.Filters
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.must.Matchers
@@ -37,15 +37,17 @@ class DefaultSessionRepositorySpec extends AnyWordSpec
   with BeforeAndAfterEach
   with ScalaFutures {
 
-  override def beforeEach(): Unit =
-    sessionRepository.collection.deleteMany(BsonDocument()).toFuture().futureValue
-
+  val config: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
+  val sessionRepository: DefaultSessionRepository = app.injector.instanceOf[DefaultSessionRepository]
+  val insertDataCollection =
+    sessionRepository.mongo.database
+      .getCollection[BsonDocument]("user-answers")
   private val data: JsObject = Json.obj("foo" -> "bar")
   private val lastUpdated: Instant = Instant.now.minus(5, ChronoUnit.MINUTES)
   private val userAnswers: UserAnswers = UserAnswers("id", data, lastUpdated)
 
-  val config: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
-  val sessionRepository: DefaultSessionRepository = app.injector.instanceOf[DefaultSessionRepository]
+  override def beforeEach(): Unit =
+    sessionRepository.collection.deleteMany(BsonDocument()).toFuture().futureValue
 
   ".set" should {
 
@@ -84,4 +86,47 @@ class DefaultSessionRepositorySpec extends AnyWordSpec
       }
     }
   }
+
+  "getAllInvalidDateDocuments" should {
+
+    "return ids for docs where lastUpdated exists but is NOT a BSON DateTime" in {
+
+      insertDataCollection.insertOne(
+        BsonDocument(
+          "_id" -> BsonString("id-string-lastUpdated"),
+          "data" -> BsonDocument("foo1" -> BsonString("bar1")),
+          "lastUpdated" -> BsonString("2026-01-30T13:06:19.192Z")
+        )
+      ).toFuture().futureValue
+
+      val result =
+        sessionRepository.getAllInvalidDateDocuments(limit = 100).toFuture().futureValue
+
+      result must contain("id-string-lastUpdated")
+    }
+
+    "NOT return ids for docs where lastUpdated is a BSON DateTime" in {
+      insertDataCollection.insertOne(BsonDocument(
+        "_id" -> BsonString("id1"),
+        "data" -> BsonDocument("foo" -> BsonString("bar")),
+        "lastUpdated" -> BsonDateTime(Instant.now().toEpochMilli)
+      ))
+
+      val ids = sessionRepository.getAllInvalidDateDocuments(limit = 100).toFuture().futureValue
+      ids must not contain ("id1")
+    }
+
+  }
+
+  "updateAllInvalidDateDocuments" should {
+    "return matched=0 and updated=0 when no ids exist" in {
+      val counters = sessionRepository.updateAllInvalidDateDocuments(Seq("no-id")).futureValue
+
+      counters.errors mustBe 0
+      counters.matched mustBe 0
+      counters.updated mustBe 0
+    }
+  }
+
+
 }
