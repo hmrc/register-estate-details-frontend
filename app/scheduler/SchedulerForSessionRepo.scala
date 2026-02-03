@@ -26,15 +26,16 @@ import repositories.DefaultSessionRepository
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.FiniteDuration
 
-class SchedulerForSessionRepo @Inject()(defaultSessionRepository: DefaultSessionRepository,
-                                        config: Configuration)
-                                       (implicit mat: Materializer, ec: ExecutionContext) extends WorkerConfig {
+class SchedulerForSessionRepo @Inject() (defaultSessionRepository: DefaultSessionRepository, config: Configuration)(
+  implicit
+  mat: Materializer,
+  ec: ExecutionContext
+) extends WorkerConfig {
 
-  private val logger = Logger(this.getClass)
+  private val logger                       = Logger(this.getClass)
   private val initialDelay: FiniteDuration = durationValueFromConfig("schedulers.initial-delay", config)
-  private val interval: FiniteDuration = durationValueFromConfig("schedulers.interval ", config)
-  private val queryLimit: Int = config.get[Int]("schedulers.queryLimit")
-
+  private val interval: FiniteDuration     = durationValueFromConfig("schedulers.interval ", config)
+  private val queryLimit: Int              = config.get[Int]("schedulers.queryLimit")
 
   val tap: SinkQueueWithCancel[Unit] = {
     logger.info("[SchedulerForSessionRepo][Tap] init")
@@ -48,22 +49,26 @@ class SchedulerForSessionRepo @Inject()(defaultSessionRepository: DefaultSession
 
   }
 
-
   def fixBadUpdatedAt(limit: Int): Source[Unit, _] = {
-    logger.info(s"started [SchedulerForSessionRepo][fixBadUpdatedAt] [$defaultSessionRepository] method with limit = $limit")
+    logger.info(
+      s"started [SchedulerForSessionRepo][fixBadUpdatedAt] [$defaultSessionRepository] method with limit = $limit"
+    )
     Source
       .fromPublisher(defaultSessionRepository.getAllInvalidDateDocuments(limit = limit))
       .fold(List.empty[String])((acc, id) => id :: acc)
       .mapAsync(parallelism = 1) { ids =>
         if (ids.isEmpty) {
-          Future.successful(UpdatedCounterValues(0, 0, 0))
+          Future
+            .successful(UpdatedCounterValues(0, 0, 0))
             .map(_.report(defaultSessionRepository.className))(mat.executionContext)
 
         } else {
-          defaultSessionRepository.updateAllInvalidDateDocuments(ids)
+          defaultSessionRepository
+            .updateAllInvalidDateDocuments(ids)
             .map(_.report(defaultSessionRepository.className))(mat.executionContext)
         }
-      }.map { repo =>
+      }
+      .map { repo =>
         logger.info(s"[SchedulerForRegistrationSubmissionRepo][fixBadUpdatedAt] ended $repo")
         repo
       }

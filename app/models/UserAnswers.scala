@@ -25,10 +25,10 @@ import java.time.temporal.ChronoUnit
 import scala.util.{Failure, Success, Try}
 
 final case class UserAnswers(
-                              id: String,
-                              data: JsObject = Json.obj(),
-                              lastUpdated: Instant = Instant.now.truncatedTo(ChronoUnit.MILLIS)
-                            ) {
+  id: String,
+  data: JsObject = Json.obj(),
+  lastUpdated: Instant = Instant.now.truncatedTo(ChronoUnit.MILLIS)
+) {
 
   def get[A](page: QuestionPage[A])(implicit rds: Reads[A]): Option[A] =
     Reads.optionNoError(Reads.at(page.path)).reads(data).getOrElse(None)
@@ -42,10 +42,9 @@ final case class UserAnswers(
         Failure(JsResultException(errors))
     }
 
-    updatedData.flatMap {
-      d =>
-        val updatedAnswers = copy(data = d)
-        page.cleanup(Some(value), updatedAnswers)
+    updatedData.flatMap { d =>
+      val updatedAnswers = copy(data = d)
+      page.cleanup(Some(value), updatedAnswers)
     }
   }
 
@@ -58,10 +57,9 @@ final case class UserAnswers(
         Success(data)
     }
 
-    updatedData.flatMap {
-      d =>
-        val updatedAnswers = copy(data = d)
-        page.cleanup(None, updatedAnswers)
+    updatedData.flatMap { d =>
+      val updatedAnswers = copy(data = d)
+      page.cleanup(None, updatedAnswers)
     }
   }
 
@@ -77,7 +75,7 @@ object UserAnswers {
       (__ \ "_id").read[String] and
         (__ \ "data").read[JsObject] and
         (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat).orElse(Reads.pure(Instant.now()))
-      )(UserAnswers.apply _)
+    )(UserAnswers.apply _)
   }
 
   val writes: OWrites[UserAnswers] = {
@@ -88,7 +86,7 @@ object UserAnswers {
       (__ \ "_id").write[String] and
         (__ \ "data").write[JsObject] and
         (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat)
-      )(unlift(UserAnswers.unapply))
+    )(unlift(UserAnswers.unapply))
   }
 
   implicit val userAnswersFormat: OFormat[UserAnswers] =

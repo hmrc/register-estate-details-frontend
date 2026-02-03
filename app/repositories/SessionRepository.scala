@@ -68,7 +68,6 @@ class DefaultSessionRepository @Inject() (val mongo: MongoComponent, val appConf
       .map(_.wasAcknowledged())
   }
 
-
   override def getAllInvalidDateDocuments(limit: Int): Observable[String] = {
     val selector =
       Filters.or(
@@ -78,7 +77,8 @@ class DefaultSessionRepository @Inject() (val mongo: MongoComponent, val appConf
 
     val sortById = Sorts.ascending("_id")
 
-    collection.find[BsonDocument](selector)
+    collection
+      .find[BsonDocument](selector)
       .sort(sortById)
       .limit(limit)
       .map { doc =>
@@ -99,19 +99,20 @@ class DefaultSessionRepository @Inject() (val mongo: MongoComponent, val appConf
     val update   = Updates.set("lastUpdated", BsonDateTime(Instant.now().toEpochMilli))
     val filterIn = Filters.in("_id", ids: _*)
 
-    collection.updateMany(filterIn, update).toFuture()
+    collection
+      .updateMany(filterIn, update)
+      .toFuture()
       .map { res =>
         UpdatedCounterValues(
           matched = res.getMatchedCount.toInt,
           updated = res.getModifiedCount.toInt,
-          errors  = 0
+          errors = 0
         )
       }
       .recover { case _ =>
         UpdatedCounterValues(matched = ids.size, updated = 0, errors = ids.size)
       }
   }
-
 
 }
 

@@ -38,14 +38,16 @@ class DefaultSessionRepositorySpec
     with BeforeAndAfterEach
     with ScalaFutures {
 
-  val config: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
+  val config: FrontendAppConfig                   = app.injector.instanceOf[FrontendAppConfig]
   val sessionRepository: DefaultSessionRepository = app.injector.instanceOf[DefaultSessionRepository]
-  val insertDataCollection =
+
+  val insertDataCollection                        =
     sessionRepository.mongo.database
       .getCollection[BsonDocument]("user-answers")
-  private val data: JsObject = Json.obj("foo" -> "bar")
-  private val lastUpdated: Instant = Instant.now.minus(5, ChronoUnit.MINUTES)
-  private val userAnswers: UserAnswers = UserAnswers("id", data, lastUpdated)
+
+  private val data: JsObject                      = Json.obj("foo" -> "bar")
+  private val lastUpdated: Instant                = Instant.now.minus(5, ChronoUnit.MINUTES)
+  private val userAnswers: UserAnswers            = UserAnswers("id", data, lastUpdated)
 
   override def beforeEach(): Unit =
     sessionRepository.collection.deleteMany(BsonDocument()).toFuture().futureValue
@@ -93,13 +95,16 @@ class DefaultSessionRepositorySpec
 
     "return ids for docs where lastUpdated exists but is NOT a BSON DateTime" in {
 
-      insertDataCollection.insertOne(
-        BsonDocument(
-          "_id" -> BsonString("id-string-lastUpdated"),
-          "data" -> BsonDocument("foo1" -> BsonString("bar1")),
-          "lastUpdated" -> BsonString("2026-01-30T13:06:19.192Z")
+      insertDataCollection
+        .insertOne(
+          BsonDocument(
+            "_id"         -> BsonString("id-string-lastUpdated"),
+            "data"        -> BsonDocument("foo1" -> BsonString("bar1")),
+            "lastUpdated" -> BsonString("2026-01-30T13:06:19.192Z")
+          )
         )
-      ).toFuture().futureValue
+        .toFuture()
+        .futureValue
 
       val result =
         sessionRepository.getAllInvalidDateDocuments(limit = 100).toFuture().futureValue
@@ -108,14 +113,16 @@ class DefaultSessionRepositorySpec
     }
 
     "NOT return ids for docs where lastUpdated is a BSON DateTime" in {
-      insertDataCollection.insertOne(BsonDocument(
-        "_id" -> BsonString("id1"),
-        "data" -> BsonDocument("foo" -> BsonString("bar")),
-        "lastUpdated" -> BsonDateTime(Instant.now().toEpochMilli)
-      ))
+      insertDataCollection.insertOne(
+        BsonDocument(
+          "_id"         -> BsonString("id1"),
+          "data"        -> BsonDocument("foo" -> BsonString("bar")),
+          "lastUpdated" -> BsonDateTime(Instant.now().toEpochMilli)
+        )
+      )
 
       val ids = sessionRepository.getAllInvalidDateDocuments(limit = 100).toFuture().futureValue
-      ids must not contain ("id1")
+      ids must not contain "id1"
     }
 
   }
@@ -124,11 +131,10 @@ class DefaultSessionRepositorySpec
     "return matched=0 and updated=0 when no ids exist" in {
       val counters = sessionRepository.updateAllInvalidDateDocuments(Seq("no-id")).futureValue
 
-      counters.errors mustBe 0
+      counters.errors  mustBe 0
       counters.matched mustBe 0
       counters.updated mustBe 0
     }
   }
-
 
 }
