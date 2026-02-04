@@ -14,13 +14,6 @@
         </encoder>
     </appender>
 
-    <appender name="CONNECTOR_LOG_FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logs/connector.log</file>
-        <encoder>
-            <pattern>%message%n</pattern>
-        </encoder>
-    </appender>
-
     <logger name="uk.gov" level="${logger.uk.gov:-INFO}"/>
     <logger name="application" level="${logger.application:-INFO}"/>
     <logger name="connectors" level="${logger.application:-INFO}"/>
@@ -34,7 +27,7 @@
 
     <logger name="org.asynchttpclient.netty" level="INFO"/>
 
-    <root level="INFO">
+    <root level="${logger.root:-INFO}">
         <appender-ref ref="FILE"/>
         <appender-ref ref="STDOUT"/>
     </root>
