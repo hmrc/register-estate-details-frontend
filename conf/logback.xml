@@ -22,8 +22,6 @@
     <logger name="services" level="INFO"/>
     <logger name="repository" level="INFO"/>
 
-    <logger name="scheduler" level="INFO"/>
-
     <logger name="com.google.inject" level="WARN"/>
 
     <logger name="org.asynchttpclient.netty" level="INFO"/>
