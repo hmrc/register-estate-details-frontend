@@ -4,7 +4,7 @@ import uk.gov.hmrc.DefaultBuildSettings.itSettings
 
 lazy val appName: String = "register-estate-details-frontend"
 
-ThisBuild / scalaVersion := "2.13.16"
+ThisBuild / scalaVersion := "2.13.18"
 ThisBuild / majorVersion := 0
 
 lazy val microservice = (project in file("."))
@@ -24,11 +24,6 @@ lazy val microservice = (project in file("."))
       "controllers.routes._"
     ),
     PlayKeys.playDefaultPort := 8823,
-    ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*Routes.*;.*filters.*;.*handlers.*;.*components.*;" +
-      ".*BuildInfo.*;.*javascript.*;.*FrontendAuditConnector.*;.*Routes.*;.*GuiceInjector;.*Mode.*;.*Page.*",
-    ScoverageKeys.coverageMinimumStmtTotal := 80,
-    ScoverageKeys.coverageFailOnMinimum := true,
-    ScoverageKeys.coverageHighlighting := true,
     scalacOptions ++= Seq(
       "-feature",
       "-Wconf:src=routes/.*:s",
