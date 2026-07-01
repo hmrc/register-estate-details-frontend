@@ -15,17 +15,13 @@
  *@
 
 @import config.FrontendAppConfig
-@import resources._
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardPage
 
 @this(
     appConfig: FrontendAppConfig,
-    govukLayout: GovukLayout,
-    hmrcHead: HmrcHead,
     hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
     hmrcStandardPage: HmrcStandardPage,
-    stylesheets: Stylesheets,
     govukBackLink: GovukBackLink,
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper
 )
@@ -54,7 +50,6 @@
         )
     }
 
-    @stylesheets()
 }
 
 @beforeContentBlock = {
