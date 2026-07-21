@@ -42,7 +42,12 @@ class SessionTimeoutController @Inject() (
     logger.info(
       s"[Session ID: ${Session.id(hc)}] user has not requested to extend their session, user has been signed out"
     )
-    Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad.url).withNewSession)
+    Future.successful(
+      Redirect(
+        appConfig.logoutWithBasGatewayUrl,
+        Map("continue" -> Seq(appConfig.timeOutUrl))
+      )
+    )
   }
 
 }
