@@ -16,13 +16,12 @@
 
 package forms.mappings
 
-import generators.Generators
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.data.validation.{Invalid, Valid}
 
-class ConstraintsSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyChecks with Generators with Constraints {
+class ConstraintsSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyChecks with Constraints {
 
   "firstError" must {
 

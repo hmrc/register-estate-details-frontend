@@ -30,8 +30,6 @@ class SessionTimeoutControllerSpec extends SpecBase {
   object TestSessionTimeoutController
       extends SessionTimeoutController(
         app.injector.instanceOf[FrontendAppConfig],
-        app.injector.instanceOf[Configuration],
-        app.injector.instanceOf[Environment],
         app.injector.instanceOf[MessagesControllerComponents]
       )
 

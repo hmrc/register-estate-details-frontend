@@ -48,8 +48,6 @@ class DefaultSessionRepository @Inject() (val mongo: MongoComponent, val appConf
     )
     with SessionRepository {
 
-  val className = this.getClass.getSimpleName
-
   override def get(id: String): Future[Option[UserAnswers]] =
     collection.find(Filters.equal("_id", id)).headOption()
 

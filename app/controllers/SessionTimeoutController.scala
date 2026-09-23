@@ -19,7 +19,7 @@ package controllers
 import config.FrontendAppConfig
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import play.api.{Configuration, Environment, Logging}
+import play.api.Logging
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Session
 
@@ -28,8 +28,6 @@ import scala.concurrent.Future
 @Singleton
 class SessionTimeoutController @Inject() (
   val appConfig: FrontendAppConfig,
-  val config: Configuration,
-  val env: Environment,
   mcc: MessagesControllerComponents
 ) extends FrontendController(mcc) with Logging {
 
