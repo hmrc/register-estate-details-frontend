@@ -36,8 +36,12 @@ class UserAnswersSpec extends SpecBase {
   "get" must {
 
     "return the stored answer" in {
-      emptyUserAnswers.set(EstateNamePage, "Estate Name").success.value
-        .get(EstateNamePage).value mustBe "Estate Name"
+      emptyUserAnswers
+        .set(EstateNamePage, "Estate Name")
+        .success
+        .value
+        .get(EstateNamePage)
+        .value mustBe "Estate Name"
     }
 
     "return None when the page is unanswered" in {
@@ -53,8 +57,12 @@ class UserAnswersSpec extends SpecBase {
 
     "overwrite an existing value" in {
       val answers = emptyUserAnswers
-        .set(EstateNamePage, "First").success.value
-        .set(EstateNamePage, "Second").success.value
+        .set(EstateNamePage, "First")
+        .success
+        .value
+        .set(EstateNamePage, "Second")
+        .success
+        .value
 
       answers.get(EstateNamePage).value mustBe "Second"
     }
@@ -70,8 +78,12 @@ class UserAnswersSpec extends SpecBase {
 
     "remove an answered page" in {
       emptyUserAnswers
-        .set(EstateNamePage, "Estate Name").success.value
-        .remove(EstateNamePage).success.value
+        .set(EstateNamePage, "Estate Name")
+        .success
+        .value
+        .remove(EstateNamePage)
+        .success
+        .value
         .get(EstateNamePage) mustBe None
     }
 

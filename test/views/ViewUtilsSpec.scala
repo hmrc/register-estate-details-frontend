@@ -22,60 +22,59 @@ import play.api.data.Forms.text
 
 class ViewUtilsSpec extends SpecBase {
 
-    "errorHref" must {
+  "errorHref" must {
 
-      "point at the day field for a date part error" in {
-        ViewUtils.errorHref(FormError("value", "error.required", Seq("day"))) mustBe "value.day"
-      }
-
-      "point at the yes option for a yes/no field" in {
-        ViewUtils.errorHref(FormError("value", "error.required"), isYesNo = true) mustBe "value-yes"
-      }
-
-      "point at the day field when the key names a date" in {
-        ViewUtils.errorHref(FormError("dateOfDeath", "error.required")) mustBe "dateOfDeath.day"
-      }
-
-      "point at the field itself otherwise" in {
-        ViewUtils.errorHref(FormError("estateName", "estateName.error.required")) mustBe "estateName"
-      }
+    "point at the day field for a date part error" in {
+      ViewUtils.errorHref(FormError("value", "error.required", Seq("day"))) mustBe "value.day"
     }
 
-    "isDateError" must {
-      "be true for date and when" in {
-        ViewUtils.isDateError("dateOfDeath") mustBe true
-        ViewUtils.isDateError("whenDidThisHappen") mustBe true
-      }
-
-      "be false otherwise" in {
-        ViewUtils.isDateError("estateName") mustBe false
-      }
+    "point at the yes option for a yes/no field" in {
+      ViewUtils.errorHref(FormError("value", "error.required"), isYesNo = true) mustBe "value-yes"
     }
 
-    "errorPrefix" must {
-
-      val form = Form("value" -> text)
-
-      "be empty for a form without errors" in {
-        ViewUtils.errorPrefix(form) mustBe ""
-      }
-
-      "be present for a form with a field error" in {
-        ViewUtils.errorPrefix(form.withError("value", "error.required")) mustBe
-          s"${messages("error.browser.title.prefix")} "
-      }
-
-      "be present for a form with a global error" in {
-        ViewUtils.errorPrefix(form.withGlobalError("error.required")) mustBe
-          s"${messages("error.browser.title.prefix")} "
-      }
+    "point at the day field when the key names a date" in {
+      ViewUtils.errorHref(FormError("dateOfDeath", "error.required")) mustBe "dateOfDeath.day"
     }
 
-    "breadcrumbTitle" must {
-      "end with GOV.UK" in {
-        ViewUtils.breadcrumbTitle("Test page") must endWith("GOV.UK")
-      }
+    "point at the field itself otherwise" in {
+      ViewUtils.errorHref(FormError("estateName", "estateName.error.required")) mustBe "estateName"
+    }
+  }
+
+  "isDateError" must {
+    "be true for date and when" in {
+      ViewUtils.isDateError("dateOfDeath")       mustBe true
+      ViewUtils.isDateError("whenDidThisHappen") mustBe true
     }
 
+    "be false otherwise" in {
+      ViewUtils.isDateError("estateName") mustBe false
+    }
+  }
+
+  "errorPrefix" must {
+
+    val form = Form("value" -> text)
+
+    "be empty for a form without errors" in {
+      ViewUtils.errorPrefix(form) mustBe ""
+    }
+
+    "be present for a form with a field error" in {
+      ViewUtils.errorPrefix(form.withError("value", "error.required")) mustBe
+        s"${messages("error.browser.title.prefix")} "
+    }
+
+    "be present for a form with a global error" in {
+      ViewUtils.errorPrefix(form.withGlobalError("error.required")) mustBe
+        s"${messages("error.browser.title.prefix")} "
+    }
+  }
+
+  "breadcrumbTitle" must {
+    "end with GOV.UK" in {
+      ViewUtils.breadcrumbTitle("Test page") must endWith("GOV.UK")
+    }
+  }
 
 }
