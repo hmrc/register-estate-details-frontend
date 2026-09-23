@@ -19,7 +19,6 @@ package views
 import play.api.data.{Form, FormError}
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
-import viewmodels.RadioOption
 
 import scala.collection.immutable
 
@@ -31,14 +30,12 @@ object ViewUtils {
   def breadcrumbTitle(title: String)(implicit messages: Messages): String =
     s"$title - ${messages("site.service_section")} - ${messages("service.name")} - GOV.UK"
 
-  def errorHref(error: FormError, radioOptions: Seq[RadioOption] = Nil, isYesNo: Boolean = false): String =
+  def errorHref(error: FormError, isYesNo: Boolean = false): String =
     error.args match {
       case x if x.contains("day") || x.contains("month") || x.contains("year") =>
         s"${error.key}.${error.args.head}"
       case _ if isYesNo                                                        =>
         s"${error.key}-yes"
-      case _ if radioOptions.nonEmpty                                          =>
-        radioOptions.head.id
       case _                                                                   =>
         val isSingleDateField = isDateError(error.message) && !error.message.toLowerCase.contains("yesno")
         if (isDateError(error.key) || isSingleDateField) {

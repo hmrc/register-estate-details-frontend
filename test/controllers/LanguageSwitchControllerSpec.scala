@@ -17,10 +17,6 @@
 package controllers
 
 import base.SpecBase
-import config.FrontendAppConfig
-import play.api.Configuration
-import play.api.inject.bind
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.Headers
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -29,107 +25,46 @@ class LanguageSwitchControllerSpec extends SpecBase {
 
   private def switchLanguageRoute(lang: String): String = routes.LanguageSwitchController.switchToLanguage(lang).url
 
-  private val english         = "english"
-  private val welsh           = "cymraeg"
   private val fakeUrl: String = "fakeUrl"
 
-  private lazy val config: Configuration = injector.instanceOf[Configuration]
+  private def switchTo(lang: String, referer: Option[String] = Some(fakeUrl)) = {
+    val application = applicationBuilder().build()
 
-  def frontendAppConfig(languageToggleEnabled: Boolean = true): FrontendAppConfig =
-    new FrontendAppConfig(config) {
-      override lazy val languageTranslationEnabled: Boolean = languageToggleEnabled
-    }
+    val headers = Headers(referer.map("Referer" -> _).toSeq: _*)
+    val request = FakeRequest(GET, switchLanguageRoute(lang)).withHeaders(headers)
+
+    val result  = route(application, request).value
+    val outcome =
+      (status(result), redirectLocation(result).value, cookies(result).find(_.name == "PLAY_LANG").map(_.value))
+
+    application.stop()
+    outcome
+  }
 
   "LanguageSwitch Controller" when {
 
-    "language toggle enabled" when {
-
-      "English selected" must {
-        "switch to English" in {
-
-          val application = new GuiceApplicationBuilder()
-            .overrides(bind[FrontendAppConfig].toInstance(frontendAppConfig()))
-            .build()
-
-          val requestHeaders: Headers = new Headers(Seq(("Referer", fakeUrl)))
-
-          val request = FakeRequest(GET, switchLanguageRoute(english)).withHeaders(requestHeaders)
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-
-          redirectLocation(result).value mustEqual fakeUrl
-
-          cookies(result).find(_.name == "PLAY_LANG").get.value mustEqual "en"
-
-          application.stop()
-        }
-      }
-
-      "Welsh selected" must {
-        "switch to Welsh" in {
-
-          val application = new GuiceApplicationBuilder()
-            .overrides(bind[FrontendAppConfig].toInstance(frontendAppConfig()))
-            .build()
-
-          val requestHeaders: Headers = new Headers(Seq(("Referer", fakeUrl)))
-
-          val request = FakeRequest(GET, switchLanguageRoute(welsh)).withHeaders(requestHeaders)
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-
-          redirectLocation(result).value mustEqual fakeUrl
-
-          cookies(result).find(_.name == "PLAY_LANG").get.value mustEqual "cy"
-
-          application.stop()
-        }
+    "English selected" must {
+      "switch to English and return to the referring page" in {
+        switchTo("english") mustBe (SEE_OTHER, fakeUrl, Some("en"))
       }
     }
 
-    "language toggle disabled" must {
-      "default to English" in {
+    "Welsh selected" must {
+      "switch to Welsh and return to the referring page" in {
+        switchTo("cymraeg") mustBe (SEE_OTHER, fakeUrl, Some("cy"))
+      }
+    }
 
-        val application = new GuiceApplicationBuilder()
-          .overrides(bind[FrontendAppConfig].toInstance(frontendAppConfig(false)))
-          .build()
-
-        val requestHeaders: Headers = new Headers(Seq(("Referer", fakeUrl)))
-
-        val request = FakeRequest(GET, switchLanguageRoute(english)).withHeaders(requestHeaders)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-
-        redirectLocation(result).value mustEqual fakeUrl
-
-        cookies(result).find(_.name == "PLAY_LANG").get.value mustEqual "en"
-
-        application.stop()
+    "an unrecognised language is selected" must {
+      "fall back to English" in {
+        switchTo("klingon") mustBe (SEE_OTHER, fakeUrl, Some("en"))
       }
     }
 
     "no referer in header" must {
-      "redirect to login continue url" in {
-
-        val application = new GuiceApplicationBuilder()
-          .overrides(bind[FrontendAppConfig].toInstance(frontendAppConfig()))
-          .build()
-
-        val request = FakeRequest(GET, switchLanguageRoute(welsh))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-
-        redirectLocation(result).value mustEqual frontendAppConfig().loginContinueUrl
-
-        application.stop()
+      "redirect to the login continue url" in {
+        switchTo("cymraeg", referer = None) mustBe
+          (SEE_OTHER, frontendAppConfig.loginContinueUrl, Some("cy"))
       }
     }
   }

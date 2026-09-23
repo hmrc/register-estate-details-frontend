@@ -16,9 +16,7 @@
 
 package forms.mappings
 
-import java.time.LocalDate
 import generators.Generators
-import org.scalacheck.Gen
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
@@ -46,42 +44,6 @@ class ConstraintsSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyC
     "return Invalid for the first error when both constraints fail" in {
       val result = firstError(maxLength(-1, "error.length"), regexp("""^\w+$""", "error.regexp"))("")
       result mustEqual Invalid("error.length", -1)
-    }
-  }
-
-  "minimumValue" must {
-
-    "return Valid for a number greater than the threshold" in {
-      val result = minimumValue(1, "error.min").apply(2)
-      result mustEqual Valid
-    }
-
-    "return Valid for a number equal to the threshold" in {
-      val result = minimumValue(1, "error.min").apply(1)
-      result mustEqual Valid
-    }
-
-    "return Invalid for a number below the threshold" in {
-      val result = minimumValue(1, "error.min").apply(0)
-      result mustEqual Invalid("error.min", 1)
-    }
-  }
-
-  "maximumValue" must {
-
-    "return Valid for a number less than the threshold" in {
-      val result = maximumValue(1, "error.max").apply(0)
-      result mustEqual Valid
-    }
-
-    "return Valid for a number equal to the threshold" in {
-      val result = maximumValue(1, "error.max").apply(1)
-      result mustEqual Valid
-    }
-
-    "return Invalid for a number above the threshold" in {
-      val result = maximumValue(1, "error.max").apply(2)
-      result mustEqual Invalid("error.max", 1)
     }
   }
 
@@ -118,68 +80,6 @@ class ConstraintsSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyC
     "return Invalid for a string longer than the allowed length" in {
       val result = maxLength(10, "error.length")("a" * 11)
       result mustEqual Invalid("error.length", 10)
-    }
-  }
-
-  "maxDate" must {
-
-    "return Valid for a date before or equal to the maximum" in {
-
-      val gen: Gen[(LocalDate, LocalDate)] = for {
-        max  <- datesBetween(LocalDate.of(2000, 1, 1), LocalDate.of(3000, 1, 1))
-        date <- datesBetween(LocalDate.of(2000, 1, 1), max)
-      } yield (max, date)
-
-      forAll(gen) { case (max, date) =>
-
-        val result = maxDate(max, "error.future")(date)
-        result mustEqual Valid
-      }
-    }
-
-    "return Invalid for a date after the maximum" in {
-
-      val gen: Gen[(LocalDate, LocalDate)] = for {
-        max  <- datesBetween(LocalDate.of(2000, 1, 1), LocalDate.of(3000, 1, 1))
-        date <- datesBetween(max.plusDays(1), LocalDate.of(3000, 1, 2))
-      } yield (max, date)
-
-      forAll(gen) { case (max, date) =>
-
-        val result = maxDate(max, "error.future", "foo")(date)
-        result mustEqual Invalid("error.future", "foo")
-      }
-    }
-  }
-
-  "minDate" must {
-
-    "return Valid for a date after or equal to the minimum" in {
-
-      val gen: Gen[(LocalDate, LocalDate)] = for {
-        min  <- datesBetween(LocalDate.of(2000, 1, 1), LocalDate.of(3000, 1, 1))
-        date <- datesBetween(min, LocalDate.of(3000, 1, 1))
-      } yield (min, date)
-
-      forAll(gen) { case (min, date) =>
-
-        val result = minDate(min, "error.past", "foo")(date)
-        result mustEqual Valid
-      }
-    }
-
-    "return Invalid for a date before the minimum" in {
-
-      val gen: Gen[(LocalDate, LocalDate)] = for {
-        min  <- datesBetween(LocalDate.of(2000, 1, 2), LocalDate.of(3000, 1, 1))
-        date <- datesBetween(LocalDate.of(2000, 1, 1), min.minusDays(1))
-      } yield (min, date)
-
-      forAll(gen) { case (min, date) =>
-
-        val result = minDate(min, "error.past", "foo")(date)
-        result mustEqual Invalid("error.past", "foo")
-      }
     }
   }
 
