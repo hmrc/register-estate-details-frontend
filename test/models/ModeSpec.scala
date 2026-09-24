@@ -14,6 +14,21 @@
  * limitations under the License.
  */
 
-package generators
+package models
 
-trait PageGenerators {}
+import base.SpecBase
+
+class ModeSpec extends SpecBase {
+
+  "Mode" must {
+
+    "serialise NormalMode for javascript" in {
+      Mode.jsLiteral.to(NormalMode) mustBe "NormalMode"
+    }
+
+    "serialise CheckMode for javascript" in {
+      Mode.jsLiteral.to(CheckMode) mustBe "CheckMode"
+    }
+  }
+
+}

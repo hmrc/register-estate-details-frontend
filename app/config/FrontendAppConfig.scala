@@ -17,21 +17,18 @@
 package config
 
 import com.google.inject.{Inject, Singleton}
-import controllers.routes
 import play.api.Configuration
 import play.api.i18n.Lang
-import play.api.mvc.Call
 
 @Singleton
 class FrontendAppConfig @Inject() (configuration: Configuration) {
 
-  lazy val authUrl: String          = configuration.get[Service]("auth").baseUrl
   lazy val loginUrl: String         = configuration.get[String]("urls.login")
   lazy val loginContinueUrl: String = configuration.get[String]("urls.loginContinue")
   lazy val logoutUrl: String        = configuration.get[String]("urls.logout")
 
   lazy val basGatewayBaseUrl: String       = configuration.get[String]("bas-gateway.host")
-  lazy val feedbackFrontendUrl: String     = configuration.get[String]("feedback-frontend.url")
+  lazy val feedbackFrontendUrl: String     = s"${configuration.get[String]("feedback-frontend.url")}?useServiceNavigation"
   lazy val timeOutUrl: String              = configuration.get[String]("urls.timeOut")
   lazy val logoutWithBasGatewayUrl: String = s"$basGatewayBaseUrl$logoutUrl"
 
@@ -41,9 +38,6 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   lazy val countdownLength: Int = configuration.get[Int]("timeout.countdown")
   lazy val timeoutLength: Int   = configuration.get[Int]("timeout.length")
 
-  lazy val locationCanonicalList: String      = configuration.get[String]("location.canonical.list.all")
-  lazy val locationCanonicalListNonUK: String = configuration.get[String]("location.canonical.list.nonUK")
-
   lazy val estatesUrl: String = configuration.get[Service]("microservice.services.estates").baseUrl
 
   lazy val estatesStoreUrl: String =
@@ -51,20 +45,11 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
 
   lazy val registerEstateHubOverview: String = configuration.get[String]("urls.registerEstateHubOverview")
 
-  lazy val languageTranslationEnabled: Boolean =
-    configuration.get[Boolean]("microservice.services.features.welsh-translation")
-
   lazy val cacheTtl: Long = configuration.get[Long]("mongodb.timeToLiveInSeconds")
-
-  val dropIndexes: Boolean =
-    configuration.getOptional[Boolean]("microservice.services.features.mongo.dropIndexes").getOrElse(false)
 
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
     "cymraeg" -> Lang("cy")
   )
-
-  def routeToSwitchLanguage: String => Call =
-    (lang: String) => routes.LanguageSwitchController.switchToLanguage(lang)
 
 }

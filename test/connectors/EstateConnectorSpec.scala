@@ -20,7 +20,6 @@ import java.time.LocalDate
 
 import base.SpecBase
 import com.github.tomakehurst.wiremock.client.WireMock._
-import generators.Generators
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Inside}
 import play.api.test.Helpers._
@@ -31,7 +30,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class EstateConnectorSpec
     extends SpecBase
-    with Generators
     with WireMockHelper
     with ScalaFutures
     with Inside

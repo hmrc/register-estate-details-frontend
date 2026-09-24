@@ -8,8 +8,6 @@ GET        /change-name                                 controllers.EstateNameCo
 POST       /name                                        controllers.EstateNameController.onSubmit(mode: Mode = NormalMode)
 POST       /change-name                                 controllers.EstateNameController.onSubmit(mode: Mode = CheckMode)
 
-GET        /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
-
 GET        /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
 
 GET        /this-service-has-been-reset                 controllers.SessionExpiredController.onPageLoad

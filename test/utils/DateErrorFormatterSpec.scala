@@ -14,6 +14,22 @@
  * limitations under the License.
  */
 
-package viewmodels
+package utils
 
-case class RepeaterAnswerRow(answer: String, changeUrl: String, deleteUrl: String)
+import base.SpecBase
+
+class DateErrorFormatterSpec extends SpecBase {
+
+  "formatArgs" must {
+
+    "look up and lowercase each date part" in {
+      DateErrorFormatter.formatArgs(Seq("day", "month", "year")) mustBe
+        Seq(messages("date.day"), messages("date.month"), messages("date.year")).map(_.toLowerCase)
+    }
+
+    "return nothing when there are no args" in {
+      DateErrorFormatter.formatArgs(Nil) mustBe Nil
+    }
+  }
+
+}

@@ -14,6 +14,20 @@
  * limitations under the License.
  */
 
-package viewmodels
+package pages
 
-trait Section
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+
+class PageSpec extends AnyWordSpec with Matchers {
+
+  "Page" must {
+
+    "convert implicitly to string" in {
+      val asString: String = EstateNamePage
+
+      asString mustBe "estateName"
+    }
+  }
+
+}

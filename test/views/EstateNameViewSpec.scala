@@ -22,6 +22,7 @@ import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.QuestionViewBehaviours
 import views.html.EstateNameView
+import play.api.i18n.{Lang, Messages}
 
 class EstateNameViewSpec extends QuestionViewBehaviours[String] {
 
@@ -51,6 +52,28 @@ class EstateNameViewSpec extends QuestionViewBehaviours[String] {
         "",
         "value"
       )
+    }
+
+    "rendered in Welsh" must {
+
+      val welsh: Messages = messagesApi.preferred(Seq(Lang("cy")))
+
+      val doc = asDocument(view.apply(form, NormalMode)(fakeRequest, welsh))
+
+      "set the character count language to Welsh" in {
+        doc.select(".govuk-character-count").attr("data-language") mustBe "cy"
+      }
+
+      "render the Welsh character count hint" in {
+        doc.select(".govuk-character-count__message").text must include("Gallwch nodi hyd at 53")
+      }
+
+      "render the i18n attributes" in {
+        val element = doc.select(".govuk-character-count").first()
+
+        element.attr("data-i18n.characters-under-limit.one")  must not be empty
+        element.attr("data-i18n.characters-over-limit.other") must not be empty
+      }
     }
 
     behave like pageWithASubmitButton(applyView(form))

@@ -14,8 +14,20 @@
  * limitations under the License.
  */
 
-package viewmodels
+package config
 
-import play.twirl.api.Html
+import base.SpecBase
 
-case class AnswerRow(label: Html, answer: Html, changeUrl: String)
+class FrontendAppConfigSpec extends SpecBase {
+
+  "FrontendAppConfig" must {
+
+    ".feedbackFrontendUrl" must {
+      "append the useServiceNavigation parameter so the exit survey renders the service navigation component" in {
+        frontendAppConfig.feedbackFrontendUrl mustBe
+          "http://localhost:9514/feedback/estates?useServiceNavigation"
+      }
+    }
+  }
+
+}

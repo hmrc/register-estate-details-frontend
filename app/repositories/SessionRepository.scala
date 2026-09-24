@@ -44,11 +44,9 @@ class DefaultSessionRepository @Inject() (val mongo: MongoComponent, val appConf
             .expireAfter(appConfig.cacheTtl, TimeUnit.SECONDS)
         )
       ),
-      replaceIndexes = appConfig.dropIndexes
+      replaceIndexes = true
     )
     with SessionRepository {
-
-  val className = this.getClass.getSimpleName
 
   override def get(id: String): Future[Option[UserAnswers]] =
     collection.find(Filters.equal("_id", id)).headOption()
