@@ -28,11 +28,11 @@ class ErrorHandlerSpec extends SpecBase {
     "render the standard error template through the main template" in {
 
       val result = handler.standardErrorTemplate("Title", "Heading", "Message")(fakeRequest).futureValue
-      val doc = Jsoup.parse(result.toString)
+      val doc    = Jsoup.parse(result.toString)
 
-      doc.title mustBe views.ViewUtils.breadcrumbTitle("Title")
-      doc.getElementsByTag("h1").text mustBe "Heading"
-      doc.select("p.govuk-body").text must include("Message")
+      doc.title                                  mustBe views.ViewUtils.breadcrumbTitle("Title")
+      doc.getElementsByTag("h1").text            mustBe "Heading"
+      doc.select("p.govuk-body").text              must include("Message")
       doc.select(".govuk-service-navigation").size must be > 0
     }
   }
