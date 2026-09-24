@@ -44,7 +44,7 @@ class DefaultSessionRepository @Inject() (val mongo: MongoComponent, val appConf
             .expireAfter(appConfig.cacheTtl, TimeUnit.SECONDS)
         )
       ),
-      replaceIndexes = appConfig.dropIndexes
+      replaceIndexes = true
     )
     with SessionRepository {
 

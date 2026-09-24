@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import views.html.components.Heading
+package pages
 
-@this(
-        mainTemplate: MainTemplate,
-        headingI: Heading
-)
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-@(pageTitle: String, heading: String, message: String)(implicit request: RequestHeader, messages: Messages)
+class PageSpec extends AnyWordSpec with Matchers {
 
-@mainTemplate(title = pageTitle) {
+  "Page" must {
 
- @headingI(heading)
+    "convert implicitly to string" in {
+      val asString: String = EstateNamePage
 
- <p class="govuk-body">@message</p>
+      asString mustBe "estateName"
+    }
+  }
+
 }

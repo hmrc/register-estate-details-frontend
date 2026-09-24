@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +12,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import views.html.components.Heading
+package models
 
-@this(
-        mainTemplate: MainTemplate,
-        headingI: Heading
-)
+import base.SpecBase
 
-@(pageTitle: String, heading: String, message: String)(implicit request: RequestHeader, messages: Messages)
+class ModeSpec extends SpecBase {
 
-@mainTemplate(title = pageTitle) {
+  "Mode" must {
 
- @headingI(heading)
+    "serialise NormalMode for javascript" in {
+      Mode.jsLiteral.to(NormalMode) mustBe "NormalMode"
+    }
 
- <p class="govuk-body">@message</p>
+    "serialise CheckMode for javascript" in {
+      Mode.jsLiteral.to(CheckMode) mustBe "CheckMode"
+    }
+  }
+
 }
