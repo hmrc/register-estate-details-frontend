@@ -6,3 +6,4 @@ service-type: Frontend
 test-repositories:
   - register-estate-performance-tests
   - estates-acceptance-tests
+serviceNowMapping: SNSVC0005913
