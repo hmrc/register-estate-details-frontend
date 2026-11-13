@@ -17,7 +17,7 @@
 package config
 
 import com.google.inject.AbstractModule
-import controllers.actions._
+import controllers.actions.*
 import repositories.{DefaultSessionRepository, SessionRepository}
 
 class Module() extends AbstractModule {

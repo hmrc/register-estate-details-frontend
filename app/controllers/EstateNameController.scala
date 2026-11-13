@@ -40,7 +40,7 @@ class EstateNameController @Inject() (
   estatesStoreConnector: EstatesStoreConnector,
   val controllerComponents: MessagesControllerComponents,
   view: EstateNameView
-)(implicit ec: ExecutionContext)
+)(using ec: ExecutionContext)
     extends FrontendBaseController with I18nSupport {
 
   private val form: Form[String] = formProvider()
@@ -58,7 +58,7 @@ class EstateNameController @Inject() (
     form
       .bindFromRequest()
       .fold(
-        (formWithErrors: Form[_]) => Future.successful(BadRequest(view(formWithErrors, mode))),
+        (formWithErrors: Form[?]) => Future.successful(BadRequest(view(formWithErrors, mode))),
         value =>
           for {
             _ <- connector.addCorrespondenceName(value)

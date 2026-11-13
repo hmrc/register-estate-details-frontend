@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import play.api.mvc.Headers
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 
 class LanguageSwitchControllerSpec extends SpecBase {
 
@@ -30,7 +30,7 @@ class LanguageSwitchControllerSpec extends SpecBase {
   private def switchTo(lang: String, referer: Option[String] = Some(fakeUrl)) = {
     val application = applicationBuilder().build()
 
-    val headers = Headers(referer.map("Referer" -> _).toSeq: _*)
+    val headers = Headers(referer.map("Referer" -> _).toSeq*)
     val request = FakeRequest(GET, switchLanguageRoute(lang)).withHeaders(headers)
 
     val result  = route(application, request).value

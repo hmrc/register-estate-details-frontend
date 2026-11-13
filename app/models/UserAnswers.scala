@@ -16,8 +16,8 @@
 
 package models
 
-import pages._
-import play.api.libs.json._
+import pages.*
+import play.api.libs.json.*
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.Instant
@@ -30,10 +30,10 @@ final case class UserAnswers(
   lastUpdated: Instant = Instant.now.truncatedTo(ChronoUnit.MILLIS)
 ) {
 
-  def get[A](page: QuestionPage[A])(implicit rds: Reads[A]): Option[A] =
-    Reads.optionNoError(Reads.at(page.path)).reads(data).getOrElse(None)
+  def get[A](page: QuestionPage[A])(using rds: Reads[A]): Option[A] =
+    Reads.optionNoError(using Reads.at(page.path)).reads(data).getOrElse(None)
 
-  def set[A](page: QuestionPage[A], value: A)(implicit writes: Writes[A]): Try[UserAnswers] = {
+  def set[A](page: QuestionPage[A], value: A)(using writes: Writes[A]): Try[UserAnswers] = {
 
     val updatedData = data.setObject(page.path, Json.toJson(value)) match {
       case JsSuccess(jsValue, _) =>
@@ -69,24 +69,24 @@ object UserAnswers {
 
   val reads: Reads[UserAnswers] = {
 
-    import play.api.libs.functional.syntax._
+    import play.api.libs.functional.syntax.*
 
     (
       (__ \ "_id").read[String] and
         (__ \ "data").read[JsObject] and
-        (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat).orElse(Reads.pure(Instant.now()))
-    )(UserAnswers.apply _)
+        (__ \ "lastUpdated").read(using MongoJavatimeFormats.instantFormat).orElse(Reads.pure(Instant.now()))
+    )(UserAnswers.apply)
   }
 
   val writes: OWrites[UserAnswers] = {
 
-    import play.api.libs.functional.syntax._
+    import play.api.libs.functional.syntax.*
 
     (
       (__ \ "_id").write[String] and
         (__ \ "data").write[JsObject] and
-        (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat)
-    )(unlift(UserAnswers.unapply))
+        (__ \ "lastUpdated").write(using MongoJavatimeFormats.instantFormat)
+    )(ua => (ua.id, ua.data, ua.lastUpdated))
   }
 
   implicit val userAnswersFormat: OFormat[UserAnswers] =

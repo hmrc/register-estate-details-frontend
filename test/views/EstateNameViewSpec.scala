@@ -35,8 +35,8 @@ class EstateNameViewSpec extends QuestionViewBehaviours[String] {
 
     val view = viewFor[EstateNameView](Some(emptyUserAnswers))
 
-    def applyView(form: Form[_]): HtmlFormat.Appendable =
-      view.apply(form, NormalMode)(fakeRequest, messages)
+    def applyView(form: Form[?]): HtmlFormat.Appendable =
+      view.apply(form, NormalMode)(using fakeRequest, messages)
 
     behave like normalPage(applyView(form), messageKeyPrefix)
 
@@ -58,7 +58,7 @@ class EstateNameViewSpec extends QuestionViewBehaviours[String] {
 
       val welsh: Messages = messagesApi.preferred(Seq(Lang("cy")))
 
-      val doc = asDocument(view.apply(form, NormalMode)(fakeRequest, welsh))
+      val doc = asDocument(view.apply(form, NormalMode)(using fakeRequest, welsh))
 
       "set the character count language to Welsh" in {
         doc.select(".govuk-character-count").attr("data-language") mustBe "cy"
