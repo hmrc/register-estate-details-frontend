@@ -27,7 +27,7 @@ class ErrorHandlerSpec extends SpecBase {
 
     "render the standard error template through the main template" in {
 
-      val result = handler.standardErrorTemplate("Title", "Heading", "Message")(fakeRequest).futureValue
+      val result = handler.standardErrorTemplate("Title", "Heading", "Message")(using fakeRequest).futureValue
       val doc    = Jsoup.parse(result.toString)
 
       doc.title                                  mustBe views.ViewUtils.breadcrumbTitle("Title")

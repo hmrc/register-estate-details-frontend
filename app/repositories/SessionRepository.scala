@@ -20,7 +20,7 @@ import com.google.inject.Singleton
 import config.FrontendAppConfig
 import models.UserAnswers
 import org.mongodb.scala.model.Indexes.ascending
-import org.mongodb.scala.model._
+import org.mongodb.scala.model.*
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
@@ -30,7 +30,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DefaultSessionRepository @Inject() (val mongo: MongoComponent, val appConfig: FrontendAppConfig)(implicit
+class DefaultSessionRepository @Inject() (val mongo: MongoComponent, val appConfig: FrontendAppConfig)(using
   val ec: ExecutionContext
 ) extends PlayMongoRepository[UserAnswers](
       collectionName = "user-answers",
@@ -53,7 +53,7 @@ class DefaultSessionRepository @Inject() (val mongo: MongoComponent, val appConf
 
   override def set(userAnswers: UserAnswers): Future[Boolean] = {
 
-    val updatedAnswers = userAnswers copy (lastUpdated = Instant.now())
+    val updatedAnswers = userAnswers.copy(lastUpdated = Instant.now())
     val options        = ReplaceOptions().upsert(true)
 
     collection

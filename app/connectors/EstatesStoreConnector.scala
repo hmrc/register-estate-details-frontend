@@ -27,7 +27,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EstatesStoreConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig) {
 
-  implicit def httpResponse: HttpReads[HttpResponse] = throwOnFailure(readEitherOf[HttpResponse](Implicits.readRaw))
+  implicit def httpResponse: HttpReads[HttpResponse] = throwOnFailure(
+    readEitherOf[HttpResponse](using Implicits.readRaw)
+  )
 
   private val registerTasksUrl = s"${config.estatesStoreUrl}/register/tasks/estate-details"
 

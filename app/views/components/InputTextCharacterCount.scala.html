@@ -15,8 +15,8 @@
  *@
 
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.{Cy, En}
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-@import views.ViewUtils._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits.*
+@import views.ViewUtils.*
 
 @this(
     govukInput: GovukInput,
@@ -71,7 +71,7 @@
             content = Text(label)
         ),
             errorMessage = field.error map { e =>
-            ErrorMessage.errorMessageWithDefaultStringsTranslated(content = Text(messages(e.message, e.args: _*)))
+            ErrorMessage.errorMessageWithDefaultStringsTranslated(content = Text(messages(e.message, e.args*)))
         },
             spellcheck = Some(false),
             classes = "govuk-js-character-count " + inputClass.getOrElse("")

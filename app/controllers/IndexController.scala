@@ -34,7 +34,7 @@ class IndexController @Inject() (
   actions: Actions,
   repository: SessionRepository,
   connector: EstateConnector
-)(implicit ec: ExecutionContext)
+)(using ec: ExecutionContext)
     extends FrontendBaseController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = actions.authWithSession.async { implicit request =>

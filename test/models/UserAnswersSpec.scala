@@ -103,15 +103,15 @@ class UserAnswersSpec extends SpecBase {
 
       val answers = UserAnswers(userAnswersId, Json.obj("a" -> "b"), instant)
 
-      val json = Json.toJson(answers)(UserAnswers.writes)
+      val json = Json.toJson(answers)(using UserAnswers.writes)
 
       json mustBe Json.obj(
         "_id"         -> userAnswersId,
         "data"        -> Json.obj("a" -> "b"),
-        "lastUpdated" -> Json.toJson(instant)(MongoJavatimeFormats.instantWrites)
+        "lastUpdated" -> Json.toJson(instant)(using MongoJavatimeFormats.instantWrites)
       )
 
-      json.as(UserAnswers.reads) mustBe answers
+      json.as(using UserAnswers.reads).mustBe(answers)
     }
   }
 

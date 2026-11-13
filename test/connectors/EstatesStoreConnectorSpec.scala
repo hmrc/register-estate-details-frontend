@@ -37,7 +37,7 @@ class EstatesStoreConnectorSpec extends SpecBase with ScalaFutures with Integrat
           Seq(
             "microservice.services.estates-store.port" -> server.port(),
             "auditing.enabled"                         -> false
-          ): _*
+          )*
         )
         .build()
 
@@ -72,7 +72,7 @@ class EstatesStoreConnectorSpec extends SpecBase with ScalaFutures with Integrat
           Seq(
             "microservice.services.estates-store.port" -> server.port(),
             "auditing.enabled"                         -> false
-          ): _*
+          )*
         )
         .build()
 
