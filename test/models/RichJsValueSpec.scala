@@ -25,7 +25,7 @@ import play.api.libs.json.*
 
 class RichJsValueSpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyChecks with OptionValues {
 
-  implicit def dontShrink[A]: Shrink[A] = Shrink.shrinkAny
+  given dontShrink[A]: Shrink[A] = Shrink.shrinkAny
 
   val min                           = 2
   val max                           = 10

@@ -89,7 +89,7 @@ object UserAnswers {
     )(ua => (ua.id, ua.data, ua.lastUpdated))
   }
 
-  implicit val userAnswersFormat: OFormat[UserAnswers] =
+  given userAnswersFormat: OFormat[UserAnswers] =
     OFormat(reads, writes)
 
 }
