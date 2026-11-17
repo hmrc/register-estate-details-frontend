@@ -31,7 +31,7 @@ class ServiceSpec extends SpecBase {
     }
     ".convertToString" in {
       val service = Service("", "", "")
-      Service.convertToString(service) mustBe "://:"
+      Service.convertToString(using service) mustBe "://:"
     }
   }
 
@@ -46,7 +46,7 @@ class ServiceSpec extends SpecBase {
     }
     ".convertToString" in {
       val service = Service("host", "port", "protocol")
-      Service.convertToString(service) mustBe "protocol://host:port"
+      Service.convertToString(using service) mustBe "protocol://host:port"
     }
   }
 

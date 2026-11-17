@@ -27,13 +27,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EstatesStoreConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig) {
 
-  implicit def httpResponse: HttpReads[HttpResponse] = throwOnFailure(
+  given httpResponse: HttpReads[HttpResponse] = throwOnFailure(
     readEitherOf[HttpResponse](using Implicits.readRaw)
   )
 
   private val registerTasksUrl = s"${config.estatesStoreUrl}/register/tasks/estate-details"
 
-  def setTaskComplete()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] =
+  def setTaskComplete()(using hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] =
     http.post(url"$registerTasksUrl").execute[HttpResponse]
 
 }

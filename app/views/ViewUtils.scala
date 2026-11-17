@@ -24,10 +24,10 @@ import scala.collection.immutable
 
 object ViewUtils {
 
-  def errorPrefix(form: Form[?])(implicit messages: Messages): String =
+  def errorPrefix(form: Form[?])(using messages: Messages): String =
     if (form.hasErrors || form.hasGlobalErrors) s"${messages("error.browser.title.prefix")} " else ""
 
-  def breadcrumbTitle(title: String)(implicit messages: Messages): String =
+  def breadcrumbTitle(title: String)(using messages: Messages): String =
     s"$title - ${messages("site.service_section")} - ${messages("service.name")} - GOV.UK"
 
   def errorHref(error: FormError, isYesNo: Boolean = false): String =

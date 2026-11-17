@@ -36,7 +36,7 @@ class EstateConnectorSpec
     with BeforeAndAfterAll
     with BeforeAndAfterEach
     with IntegrationPatience {
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  given hc: HeaderCarrier = HeaderCarrier()
 
   val utr             = "1000000008"
   val index           = 0

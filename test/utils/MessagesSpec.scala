@@ -31,8 +31,6 @@ class MessagesSpec extends SpecBase {
     )
     .build()
 
-  implicit override lazy val messages: Messages = messagesApi.preferred(Seq(Lang("en"), Lang("cy")))
-
   val MatchSingleQuoteOnly: Regex   = """\w+'{1}\w+""".r
   val MatchBacktickQuoteOnly: Regex = """`+""".r
 
