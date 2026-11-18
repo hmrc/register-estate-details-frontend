@@ -18,7 +18,6 @@ package utils
 
 import base.SpecBase
 import play.api.Application
-import play.api.i18n.{Lang, Messages}
 import play.api.inject.guice.GuiceApplicationBuilder
 
 import scala.util.matching.Regex
