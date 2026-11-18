@@ -27,7 +27,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class EstatesStoreConnectorSpec extends SpecBase with ScalaFutures with IntegrationPatience with WireMockHelper {
 
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  given hc: HeaderCarrier = HeaderCarrier()
 
   "trusts store connector" must {
 
@@ -37,7 +37,7 @@ class EstatesStoreConnectorSpec extends SpecBase with ScalaFutures with Integrat
           Seq(
             "microservice.services.estates-store.port" -> server.port(),
             "auditing.enabled"                         -> false
-          ): _*
+          )*
         )
         .build()
 
@@ -72,7 +72,7 @@ class EstatesStoreConnectorSpec extends SpecBase with ScalaFutures with Integrat
           Seq(
             "microservice.services.estates-store.port" -> server.port(),
             "auditing.enabled"                         -> false
-          ): _*
+          )*
         )
         .build()
 

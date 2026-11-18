@@ -20,9 +20,9 @@ import base.SpecBase
 import com.google.inject.Inject
 import controllers.routes
 import play.api.mvc.{Action, AnyContent, BodyParsers, Results}
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
-import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
@@ -35,9 +35,7 @@ class AuthActionSpec extends SpecBase {
     def onPageLoad(): Action[AnyContent] = authAction(_ => Results.Ok)
   }
 
-  implicit private class HelperOps[A](a: A) {
-    def ~[B](b: B) = new ~(a, b)
-  }
+  extension [A](a: A) private def ~[B](b: B) = new ~(a, b)
 
   private type AuthRetrievals = Future[Option[String] ~ Option[AffinityGroup]]
 
@@ -48,7 +46,7 @@ class AuthActionSpec extends SpecBase {
     Future.successful(internalId ~ affinityGroup)
 
   private def actionToTest(authConnector: AuthConnector) =
-    new AuthenticatedIdentifierAction(authConnector, frontendAppConfig, injector.instanceOf[BodyParsers.Default])(
+    new AuthenticatedIdentifierAction(authConnector, frontendAppConfig, injector.instanceOf[BodyParsers.Default])(using
       ExecutionContext.Implicits.global
     )
 
@@ -169,7 +167,7 @@ class AuthActionSpec extends SpecBase {
 class FakeFailingAuthConnector @Inject() (exceptionToReturn: Throwable) extends AuthConnector {
   val serviceUrl: String = ""
 
-  override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit
+  override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(using
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[A] =
@@ -177,9 +175,9 @@ class FakeFailingAuthConnector @Inject() (exceptionToReturn: Throwable) extends 
 
 }
 
-class FakeAuthConnector(stubbedRetrievalResult: Future[_]) extends AuthConnector {
+class FakeAuthConnector(stubbedRetrievalResult: Future[?]) extends AuthConnector {
 
-  override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit
+  override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(using
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[A] =

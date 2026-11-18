@@ -14,11 +14,11 @@
  * limitations under the License.
  *@
 
-@import controllers.routes._
+@import controllers.routes.*
 @import config.FrontendAppConfig
 @import views.html.components.{InputTextCharacterCount,Heading, ErrorSummary, SubmitButton}
 
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits.*
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLabel
 
 @this(
@@ -26,18 +26,17 @@
         formHelper: FormWithCSRF,
         errorSummary: ErrorSummary,
         submitButton: SubmitButton,
-        appConfig: FrontendAppConfig,
         characterCount: InputTextCharacterCount
 )
 
-@(form: Form[_], mode: Mode)(implicit request: RequestHeader, messages: Messages)
+@(form: Form[?], mode: Mode)(using request: RequestHeader, messages: Messages)
 
 @mainTemplate(
     title = s"${errorPrefix(form)}${messages("estateName.title")}",
     showBackLink = true
 ) {
 
-    @formHelper(action = EstateNameController.onSubmit(mode), Symbol("autoComplete") -> "on") {
+    @formHelper(action =  routes.EstateNameController.onSubmit(mode), Symbol("autoComplete") -> "on") {
 
         @errorSummary(form.errors)
 

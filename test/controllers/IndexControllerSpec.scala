@@ -23,7 +23,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 
 import scala.concurrent.Future
 
@@ -37,7 +37,7 @@ class IndexControllerSpec extends SpecBase {
 
     "return OK and the correct view for a GET" in {
 
-      when(mockEstateConnector.getCorrespondenceName()(any(), any())).thenReturn(Future.successful(Some(name)))
+      when(mockEstateConnector.getCorrespondenceName()(using any(), any())).thenReturn(Future.successful(Some(name)))
 
       val application =
         applicationBuilder(userAnswers = None)

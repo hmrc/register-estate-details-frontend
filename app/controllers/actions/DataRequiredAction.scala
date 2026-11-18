@@ -28,12 +28,12 @@ import utils.Session
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataRequiredActionImpl @Inject() (implicit val executionContext: ExecutionContext)
+class DataRequiredActionImpl @Inject() ()(using val executionContext: ExecutionContext)
     extends DataRequiredAction with Logging {
 
   override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = {
 
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+    given hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     request.userAnswers match {
       case None       =>

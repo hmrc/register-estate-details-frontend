@@ -15,7 +15,7 @@
  *@
 
 @import config.FrontendAppConfig
-@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.*
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardPage
 
 @this(
@@ -30,7 +30,7 @@
     timeoutEnabled: Boolean = true,
     canSignOut: Boolean = true,
     showBackLink: Boolean = false
-)(mainContent: Html)(implicit request: RequestHeader, messages: Messages)
+)(mainContent: Html)(using request: RequestHeader, messages: Messages)
 
 @headScripts = {
     @if(timeoutEnabled) {

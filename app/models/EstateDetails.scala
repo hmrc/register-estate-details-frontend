@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 case class EstateDetails(name: String)
 
 object EstateDetails {
-  implicit lazy val formats: Format[EstateDetails] = Json.format[EstateDetails]
+  given formats: Format[EstateDetails] = Json.format[EstateDetails]
 }

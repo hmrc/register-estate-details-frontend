@@ -26,6 +26,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfterEach, OptionValues}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.{JsObject, Json}
+import org.mongodb.scala.SingleObservableFuture
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -52,7 +53,7 @@ class DefaultSessionRepositorySpec
 
     "must set the data on the supplied user answers, and save them" in {
 
-      val expectedResult = userAnswers copy (lastUpdated = Instant.now())
+      val expectedResult = userAnswers.copy(lastUpdated = Instant.now())
 
       val setResult     = sessionRepository.set(userAnswers).futureValue
       val updatedRecord =

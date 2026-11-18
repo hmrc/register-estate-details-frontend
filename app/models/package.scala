@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import play.api.libs.json._
+import play.api.libs.json.*
 
 package object models {
 
-  implicit class RichJsObject(jsObject: JsObject) {
+  extension (jsObject: JsObject) {
 
     def setObject(path: JsPath, value: JsValue): JsResult[JsObject] =
       jsObject.set(path, value).flatMap(_.validate[JsObject])
 
   }
 
-  implicit class RichJsValue(jsValue: JsValue) {
+  extension (jsValue: JsValue) {
 
     def set(path: JsPath, value: JsValue): JsResult[JsValue] =
       (path.path, jsValue) match {
@@ -44,7 +44,7 @@ package object models {
 
         case (first :: second :: rest, oldValue) =>
           Reads
-            .optionNoError(Reads.at[JsValue](JsPath(first :: Nil)))
+            .optionNoError(using Reads.at[JsValue](JsPath(first :: Nil)))
             .reads(oldValue)
             .flatMap { opt =>
               opt
@@ -122,9 +122,9 @@ package object models {
         case (first :: second :: rest, oldValue)                                       =>
 
           Reads
-            .optionNoError(Reads.at[JsValue](JsPath(first :: Nil)))
+            .optionNoError(using Reads.at[JsValue](JsPath(first :: Nil)))
             .reads(oldValue)
-            .flatMap { opt: Option[JsValue] =>
+            .flatMap { (opt: Option[JsValue]) =>
               opt
                 .map(JsSuccess(_))
                 .getOrElse {

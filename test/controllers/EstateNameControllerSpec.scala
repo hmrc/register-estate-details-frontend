@@ -20,13 +20,13 @@ import base.SpecBase
 import connectors.{EstateConnector, EstatesStoreConnector}
 import forms.EstateNameFormProvider
 import models.NormalMode
-import org.mockito.ArgumentMatchers._
-import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers.*
+import org.mockito.Mockito.*
 import org.scalatestplus.mockito.MockitoSugar
 import pages.EstateNamePage
 import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.http.HttpResponse
 import views.html.EstateNameView
 
@@ -56,7 +56,7 @@ class EstateNameControllerSpec extends SpecBase with MockitoSugar {
       status(result) mustEqual OK
 
       contentAsString(result) mustEqual
-        view(form, NormalMode)(request, messages).toString
+        view(form, NormalMode)(using request, messages).toString
 
       application.stop()
     }
@@ -75,7 +75,7 @@ class EstateNameControllerSpec extends SpecBase with MockitoSugar {
       status(result) mustEqual OK
 
       contentAsString(result) mustEqual
-        view(form.fill(name), NormalMode)(request, messages).toString
+        view(form.fill(name), NormalMode)(using request, messages).toString
 
       application.stop()
     }
@@ -93,9 +93,9 @@ class EstateNameControllerSpec extends SpecBase with MockitoSugar {
           .overrides(bind[EstatesStoreConnector].toInstance(mockEstatesStoreConnector))
           .build()
 
-      when(mockEstateConnector.addCorrespondenceName(any())(any(), any()))
+      when(mockEstateConnector.addCorrespondenceName(any())(using any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK, "")))
-      when(mockEstatesStoreConnector.setTaskComplete()(any(), any()))
+      when(mockEstatesStoreConnector.setTaskComplete()(using any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK, "")))
 
       val request = FakeRequest(POST, submitDetailsRoute).withFormUrlEncodedBody(("value", name))
@@ -126,7 +126,7 @@ class EstateNameControllerSpec extends SpecBase with MockitoSugar {
       status(result) mustEqual BAD_REQUEST
 
       contentAsString(result) mustEqual
-        view(boundForm, NormalMode)(request, messages).toString
+        view(boundForm, NormalMode)(using request, messages).toString
 
       application.stop()
     }
