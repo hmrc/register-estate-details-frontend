@@ -35,9 +35,7 @@ class AuthActionSpec extends SpecBase {
     def onPageLoad(): Action[AnyContent] = authAction(_ => Results.Ok)
   }
 
-  implicit private class HelperOps[A](a: A) {
-    def ~[B](b: B) = new ~(a, b)
-  }
+  extension [A](a: A) private def ~[B](b: B) = new ~(a, b)
 
   private type AuthRetrievals = Future[Option[String] ~ Option[AffinityGroup]]
 
@@ -179,7 +177,7 @@ class FakeFailingAuthConnector @Inject() (exceptionToReturn: Throwable) extends 
 
 class FakeAuthConnector(stubbedRetrievalResult: Future[?]) extends AuthConnector {
 
-  override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit
+  override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(using
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[A] =

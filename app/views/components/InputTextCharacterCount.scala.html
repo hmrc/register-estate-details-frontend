@@ -30,7 +30,7 @@
     label: String,
     inputClass: Option[String] = None,
     maxLength: Option[Int]
-)(implicit messages: Messages)
+)(using messages: Messages)
 
 @attrs = {
     @maxLength.filter(_ > 0).map {value => data-maxlength="@value"}
